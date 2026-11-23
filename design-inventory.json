@@ -1,0 +1,6 @@
+{
+  "space": [{"name":"gutter","px":16},{"name":"row padding","px":32},{"name":"description gap","px":40},{"name":"card gap","px":48},{"name":"hero gap","px":64},{"name":"section padding","px":80},{"name":"typography section","px":112},{"name":"hero padding","px":160}],
+  "type": [{"name":"Display","sizePx":96,"lineHeightPx":86.4},{"name":"H1","sizePx":72,"lineHeightPx":64.8},{"name":"H2","sizePx":56,"lineHeightPx":56},{"name":"H3","sizePx":48,"lineHeightPx":48},{"name":"H4","sizePx":32},{"name":"H6","sizePx":16},{"name":"Body large","sizePx":24},{"name":"Body main","sizePx":18},{"name":"Body small","sizePx":16}],
+  "radius": [{"name":"label","px":8}],
+  "color": [{"name":"paper","hex":"#fbfbfb"},{"name":"ink","hex":"#231f20"},{"name":"brown","hex":"#341500"},{"name":"cream","hex":"#fbfaed"},{"name":"orange","hex":"#fe6730","on":"#fbfaed","sizePx":56},{"name":"guide orange","hex":"#f17608"},{"name":"spacing swatch","hex":"#fffcf4"},{"name":"divider","hex":"#626262"}]
+}

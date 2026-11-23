@@ -1,0 +1,15 @@
+---
+import "@/styles/global.css";
+import BaseHead from "@/components/utility/BaseHead.astro";
+import SkipLink from "@/components/global/SkipLink.astro";
+import StyleGuide from "@/components/section/StyleGuide.astro";
+---
+
+<!doctype html>
+<html lang="en">
+  <head><BaseHead title="Style Guide" noindex={true} /></head>
+  <body>
+    <SkipLink />
+    <main id="main" tabindex="-1"><StyleGuide /></main>
+  </body>
+</html>

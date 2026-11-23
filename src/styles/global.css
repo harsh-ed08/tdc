@@ -1,0 +1,9 @@
+/* Cascade order, lowest priority first */
+
+@layer base, patterns, components, utilities;
+
+@import "./fonts.css";
+
+@import "./base.css" layer(base);
+@import "./patterns.css" layer(patterns);
+@import "./utilities.css" layer(utilities);
