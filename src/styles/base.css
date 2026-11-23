@@ -4,6 +4,7 @@
   --light-100: #fbfbfb;
   --light-200: #fffcf4;
   --light-300: #fbfaed;
+  --neutral-500: #878787;
   --dark-700: #626262;
   --dark-800: #231f20;
   --dark-900: #341500;
@@ -62,7 +63,7 @@
   --max-width-full: 100%;
 
   /* Nav */
-  --nav-height: 5rem;
+  --nav-height: 4rem;
 
   /* Typography styles */
   --display: clamp(var(--display-min) / 16 * 1rem, ((var(--display-min) - ((var(--display-max) - var(--display-min)) / (var(--viewport-max) - var(--viewport-min)) * var(--viewport-min))) / 16 * 1rem + ((var(--display-max) - var(--display-min)) / (var(--viewport-max) - var(--viewport-min))) * 100vw), var(--display-max) / 16 * 1rem);
@@ -660,4 +661,20 @@ h6,
     display: table;
     margin-bottom: calc(-0.5lh + var(--_trim-bottom));
   }
+}
+
+/* Shared section grid: all page rules use the same responsive geometry. */
+:root {
+  --layout-gutter: var(--space-8);
+  --layout-max-width: 90rem;
+  --layout-columns: minmax(0, 2fr) minmax(0, 3fr) minmax(0, 5fr);
+}
+@media (width < 64rem) {
+  :root {
+    --layout-gutter: 2rem;
+    --layout-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (width < 48rem) {
+  :root { --layout-columns: minmax(0, 1fr); }
 }

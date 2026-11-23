@@ -1,0 +1,31 @@
+---
+const clipId = `cta-arrow-${crypto.randomUUID()}`;
+const oval = "M4.03429 4.66713C7.87034 -0.612745 12.7565 -1.55343 14.9471 2.56643C17.1376 6.68631 15.8029 14.3064 11.9669 19.5862C8.13094 24.8659 3.24564 25.8065 1.05504 21.6869C-1.1355 17.5672 0.198379 9.947 4.03429 4.66713Z";
+const arrow = "M6.06515 16.5839C5.99028 16.803 6.10724 17.0414 6.32639 17.1163C6.54554 17.1911 6.78389 17.0742 6.85876 16.855L6.46195 16.7194L6.06515 16.5839ZM6.46195 16.7194L6.85876 16.855L9.49712 9.13245L9.10032 8.99689L8.70351 8.86132L6.06515 16.5839L6.46195 16.7194ZM9.47676 8.81216C9.37474 8.60426 9.1235 8.51842 8.91559 8.62045L5.5276 10.283C5.3197 10.385 5.23386 10.6362 5.33588 10.8441C5.4379 11.052 5.68914 11.1379 5.89705 11.0358L8.9086 9.55806L10.3864 12.5696C10.4884 12.7775 10.7397 12.8633 10.9476 12.7613C11.1555 12.6593 11.2413 12.4081 11.1393 12.2002L9.47676 8.81216Z";
+---
+<span class="cta-arrow_wrap" data-roll-motion data-roll-distance="-24.2533px" aria-hidden="true">
+  <svg width="16.001" height="24.2533" viewBox="0 0 16.001 24.2533" fill="none" focusable="false">
+    <defs><clipPath id={clipId}><path d={oval} /></clipPath></defs>
+    <path d={oval} fill="#FE6730" />
+    <g clip-path={`url(#${clipId})`}>
+      <g data-roll-track>
+        <path d={arrow} fill="#341500" />
+        <path d={arrow} fill="#341500" transform="translate(0 24.2533)" />
+      </g>
+    </g>
+  </svg>
+</span>
+<script>
+  import "@/utils/roll-motion.ts";
+</script>
+<style is:global>
+  @layer components {
+    .cta-arrow_wrap {
+      display: block;
+      flex: none;
+      width: 1rem;
+      height: 1.5158125rem;
+      svg { display: block; width: 100%; height: 100%; }
+    }
+  }
+</style>

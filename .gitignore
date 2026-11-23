@@ -31,3 +31,6 @@ pnpm-debug.log*
 # ShipStudio metadata
 .shipstudio/
 .shipstudio-team/threads/
+
+# Local inspection tools and generated reference frames
+.tmp/

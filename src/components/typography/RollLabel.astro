@@ -1,0 +1,35 @@
+﻿---
+import { slotContent } from "@/utils/slots.ts";
+const content = await slotContent(Astro.slots);
+---
+
+<span class="roll-label_wrap" data-roll-motion>
+  <span class="roll-label_track" data-roll-track>
+    <span class="roll-label_line"><Fragment set:html={content} /></span>
+    <span class="roll-label_line" aria-hidden="true"
+      ><Fragment set:html={content} /></span
+    >
+  </span>
+</span>
+<script>
+  import "@/utils/roll-motion.ts";
+</script>
+<style is:global>
+  @layer components {
+    .roll-label_wrap {
+      display: inline-block;
+      height: 1lh;
+      overflow: clip;
+      vertical-align: bottom;
+      flex: none;
+      .roll-label_track {
+        display: block;
+      }
+      .roll-label_line {
+        display: block;
+        white-space: nowrap;
+        line-height: inherit;
+      }
+    }
+  }
+</style>

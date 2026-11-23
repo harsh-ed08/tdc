@@ -6,6 +6,7 @@ import close from "@/assets/icons/close.svg";
 import play from "@/assets/icons/play.svg";
 import pause from "@/assets/icons/pause.svg";
 import { slotContent } from "@/utils/slots.ts";
+import RollLabel from "@/components/typography/RollLabel.astro";
 
 type Emphasis = "primary" | "secondary";
 
@@ -140,7 +141,9 @@ const named = {
     >
       {isWritten && (
         <span class="button_text text-style-trim">
-          <Fragment set:html={content} />
+          <RollLabel>
+            <Fragment set:html={content} />
+          </RollLabel>
         </span>
       )}
       {variant === "play" && (
@@ -177,6 +180,10 @@ const named = {
       line-height: 1.2;
       text-decoration: none;
       text-align: center;
+      .button_text {
+        display: flex;
+        align-items: center;
+      }
       transition:
         background-color var(--hover-duration) var(--hover-ease),
         color var(--hover-duration) var(--hover-ease),

@@ -32,7 +32,9 @@ const content = await slotContent(Astro.slots);
     >
       <summary class="dropdown_toggle">
         <span class="dropdown_label text-style-trim">{label}</span>
-        <Icon class="dropdown_icon" src={arrow} variant="small" />
+        <slot name="icon">
+          <Icon class="dropdown_icon" src={arrow} variant="small" />
+        </slot>
       </summary>
 
       <div class="dropdown_content">
