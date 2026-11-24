@@ -13,7 +13,7 @@ const { href } = Astro.props;
 ---
 
 <section class="careers-cta_wrap theme-light" aria-labelledby="careers-cta-title">
-  <div class="careers-cta_inner">
+  <div class="careers-cta_inner layout_frame">
     <div class="careers-cta_rules layout_rules" aria-hidden="true"><span /><span /><span /></div>
     <div class="careers-cta_card">
       <Image class="careers-cta_background" src={background} alt="" loading="lazy" sizes="100vw" />
@@ -33,9 +33,7 @@ const { href } = Astro.props;
       background: var(--background);
       .careers-cta_inner {
         position: relative;
-        width: calc(100% - 2 * var(--layout-gutter));
-        max-width: var(--layout-max-width);
-        margin-inline: auto;
+
         padding-block: clamp(3rem, 6.25vw, 5.625rem);
       }
       .careers-cta_rules {
@@ -49,7 +47,7 @@ const { href } = Astro.props;
         align-items: center;
         min-height: clamp(15rem, 22.3vw, 20rem);
         overflow: clip;
-        background: #341500;
+        background: var(--dark-900);
         color: var(--brand-500);
       }
       .careers-cta_background {
@@ -70,7 +68,7 @@ const { href } = Astro.props;
         font-size: clamp(2rem, 3.89vw, 3.5rem);
         font-weight: var(--primary-light);
         line-height: 1.15;
-        letter-spacing: 0;
+        letter-spacing: var(--letter-spacing-normal);
         &::before, &::after { display: none; }
       }
       .careers-cta_link {
@@ -79,11 +77,11 @@ const { href } = Astro.props;
         justify-self: end;
         display: flex;
         align-items: center;
-        gap: 0.5rem;
+        gap: var(--space-1);
         min-height: 2.75rem;
         margin-right: 2rem;
-        font: 400 0.875rem/1 var(--label-family);
-        &:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
+        font: var(--primary-regular) var(--label-size-small)/1 var(--label-family);
+        &:focus-visible { outline: var(--focus-width) solid currentColor; outline-offset: var(--focus-offset); }
       }
       @media (width < 64rem) and (width >= 48rem) {
         .careers-cta_title { grid-column: 1 / -1; padding-left: 22%; font-size: 2rem; }

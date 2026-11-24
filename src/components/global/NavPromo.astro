@@ -1,4 +1,4 @@
-﻿---
+---
 import Heading from "@/components/typography/Heading.astro";
 import RollLabel from "@/components/typography/RollLabel.astro";
 import CtaArrow from "@/components/typography/CtaArrow.astro";
@@ -46,20 +46,20 @@ const { variant = "compact" } = Astro.props;
       }
       .nav-promo_label,
       .nav-promo_action {
-        font: 400 1rem/1.3 var(--label-family);
+        font: var(--primary-regular) var(--label-size-main)/1.3 var(--label-family);
       }
       .nav-promo_label,
       .nav-promo_title {
         margin-block: 0;
       }
       .nav-promo_title {
-        font: 300 1rem/1.3 var(--heading-family);
+        font: var(--primary-light) 1rem/1.3 var(--heading-family);
         text-wrap: initial;
       }
       .nav-promo_action {
         display: flex;
         align-items: center;
-        gap: 0.5rem;
+        gap: var(--space-1);
         width: fit-content;
         align-self: start;
         max-width: 100%;
@@ -84,10 +84,10 @@ const { variant = "compact" } = Astro.props;
         }
         .nav-promo_label {
           margin-top: 1.5rem;
-          font: 400 0.875rem/1.3 var(--primary-family);
+          font: var(--primary-regular) 0.875rem/1.3 var(--primary-family);
         }
         .nav-promo_action {
-          margin-bottom: 1.5rem;
+          margin-bottom: var(--space-4);
         }
       }
       &.wide .nav-promo_image {
@@ -103,20 +103,20 @@ const { variant = "compact" } = Astro.props;
       &.compact {
         grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
         grid-template-rows: 1fr auto auto;
-        gap: 1.5rem;
+        gap: var(--space-4);
         .nav-promo_image {
           height: 14.625rem;
         }
         .nav-promo_label {
           margin-top: 1rem;
-          font: 400 0.875rem/1.3 var(--primary-family);
+          font: var(--primary-regular) 0.875rem/1.3 var(--primary-family);
         }
         .nav-promo_title {
           font-size: 0.875rem;
           line-height: 1.4;
         }
         .nav-promo_action {
-          margin-bottom: 1rem;
+          margin-bottom: var(--space-3);
         }
       }
       &.mobile {

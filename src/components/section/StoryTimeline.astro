@@ -1,0 +1,310 @@
+---
+import Heading from "@/components/typography/Heading.astro";
+import Eyebrow from "@/components/typography/Eyebrow.astro";
+import { timelineMilestones } from "@/data/timeline";
+---
+
+<section class="story_wrap theme-light" aria-labelledby="story-title">
+  <div class="story_inner layout_frame">
+    <div class="story_rules layout_rules" aria-hidden="true"><span /><span /><span /></div>
+    <div class="story_header">
+      <Eyebrow class="story_label">Our story</Eyebrow>
+      <Heading tag="h2" variant="inherit" id="story-title" class="story_title">A decade of building institutional capital expertise.</Heading>
+    </div>
+    <div class="story_stage">
+      <div class="story_viewport" tabindex="0" role="region" aria-label="Company timeline. Use arrow keys to explore milestones.">
+        <ol class="story_track">
+          {timelineMilestones.map((milestone, index) => (
+            <li class:list={["story_item", index === 0 && "is-active"]} data-year={milestone.year} aria-current={index === 0 ? "step" : undefined}>
+              <div class="story_visual">
+                <div class="story_art">
+                  {milestone.image ? (
+                    <img src={milestone.image} alt={milestone.imageAlt ?? ""} width="320" height="320" loading="lazy" />
+                  ) : (
+                    <span class:list={["story_wordmark", index === 0 && "finlender"]}>{milestone.wordmark}</span>
+                  )}
+                  {milestone.draft && <span class="story_draft">Illustrative milestone</span>}
+                </div>
+              </div>
+              <div class="story_ruler" aria-hidden="true"><i /></div>
+              <p class="story_description"><span class="story_dot" aria-hidden="true" />{milestone.description}</p>
+              <span class="story_item-year">{milestone.year}</span>
+            </li>
+          ))}
+        </ol>
+      </div>
+      <p class="story_year" aria-hidden="true">{timelineMilestones[0]?.year}</p>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { gsap } from "gsap";
+  import { ScrollTrigger } from "gsap/ScrollTrigger";
+  import { durationToken } from "@/utils/design-tokens";
+
+  gsap.registerPlugin(ScrollTrigger);
+  let media: ReturnType<typeof gsap.matchMedia> | undefined;
+
+  function initStoryTimeline() {
+    media?.revert();
+    media = gsap.matchMedia();
+    media.add("(prefers-reduced-motion: no-preference) and (min-height: 640px)", () => {
+      const cleanups: (() => void)[] = [];
+      document.querySelectorAll<HTMLElement>(".story_wrap").forEach((section) => {
+        const track = section.querySelector<HTMLElement>(".story_track")!;
+        const year = section.querySelector<HTMLElement>(".story_year")!;
+        const items = [...section.querySelectorAll<HTMLElement>(".story_item")];
+        if (items.length < 2) return;
+
+        section.classList.add("is-animated");
+        let active = -1;
+        const select = (index: number) => {
+          if (active === index) return;
+          active = index;
+          items.forEach((item, i) => {
+            item.classList.toggle("is-active", i === index);
+            if (i === index) item.setAttribute("aria-current", "step");
+            else item.removeAttribute("aria-current");
+          });
+          year.textContent = items[index].dataset.year ?? "";
+        };
+        const distance = () => items[items.length - 1].offsetLeft - items[0].offsetLeft;
+        const navHeight = () => document.querySelector(".nav_wrap")?.getBoundingClientRect().height ?? 64;
+        const sizePinnedArea = () => section.style.setProperty("--story-nav-height", `${navHeight()}px`);
+        sizePinnedArea();
+        let locked = false;
+        let lockedY = 0;
+        let moving = false;
+        let releasing = false;
+        let gestureUsed = false;
+        let motion: gsap.core.Tween | undefined;
+        let trigger: ScrollTrigger;
+        const release = (direction: number) => {
+          locked = false;
+          observer.disable();
+          motion?.kill();
+          moving = false;
+          releasing = true;
+          window.scrollTo({ top: direction > 0 ? trigger.end + 1 : trigger.start - 1, behavior: "instant" });
+          ScrollTrigger.update();
+          releasing = false;
+        };
+        const goTo = (index: number) => {
+          if (moving) return;
+          if (index < 0 || index >= items.length) {
+            release(index < 0 ? -1 : 1);
+            return;
+          }
+          moving = true;
+          gestureUsed = true;
+          select(index);
+          motion = gsap.to(track, {
+            x: -distance() * index / (items.length - 1),
+            duration: durationToken(section, "--motion-timeline-duration", 800) / 1000,
+            ease: "power3.inOut",
+            overwrite: true,
+            onComplete: () => { moving = false; },
+          });
+        };
+        // Consume gestures while pinned: the document's scroll position stays fixed.
+        const observer = ScrollTrigger.observe({
+          target: window,
+          type: "wheel,touch",
+          preventDefault: true,
+          allowClicks: true,
+          tolerance: 15,
+          onStopDelay: 0.18,
+          onStop: () => { gestureUsed = false; },
+          onChange: (self) => {
+            if (!locked || moving || gestureUsed) return;
+            const delta = Math.abs(self.deltaY) >= Math.abs(self.deltaX) ? self.deltaY : self.deltaX;
+            const direction = self.event.type === "wheel" ? Math.sign(delta) : -Math.sign(delta);
+            if (direction) goTo(active + direction);
+          },
+        });
+        observer.disable();
+        const lock = (self: ScrollTrigger, index: number) => {
+          if (releasing || locked) return;
+          lockedY = self.start + 1;
+          locked = true;
+          gestureUsed = false;
+          select(index);
+          gsap.set(track, { x: -distance() * index / (items.length - 1) });
+          window.scrollTo({ top: lockedY, behavior: "instant" });
+          observer.enable();
+        };
+        trigger = ScrollTrigger.create({
+          trigger: section,
+          start: () => `top top+=${navHeight()}`,
+          end: "+=2",
+          pin: true,
+          anticipatePin: 1,
+          onRefreshInit: sizePinnedArea,
+          onEnter: (self) => lock(self, 0),
+          onEnterBack: (self) => lock(self, items.length - 1),
+          onRefresh: (self) => {
+            if (locked) {
+              lockedY = self.start + 1;
+              window.scrollTo({ top: lockedY, behavior: "instant" });
+            }
+            if (!moving) gsap.set(track, { x: -distance() * Math.max(0, active) / (items.length - 1) });
+          },
+        });
+        if (active < 0) select(0);
+        // Catch a boundary-crossing gesture before the browser overshoots the pin.
+        const captureEntry = (event: Event, delta: number) => {
+          if (locked || !event.cancelable) return;
+          const y = window.scrollY;
+          const entersDown = delta > 0 && y < trigger.start && y + delta >= trigger.start;
+          const entersUp = delta < 0 && y > trigger.end && y + delta <= trigger.end;
+          if (!entersDown && !entersUp) return;
+          event.preventDefault();
+          lock(trigger, entersDown ? 0 : items.length - 1);
+          gestureUsed = true;
+          ScrollTrigger.update();
+          // The entry gesture is consumed; a fresh gesture advances the timeline.
+          entryReset?.kill();
+          entryReset = gsap.delayedCall(0.2, () => { gestureUsed = false; });
+        };
+        let entryReset: gsap.core.Tween | undefined;
+        const interceptEntry = (event: WheelEvent) => {
+          if (event.ctrlKey) return;
+          captureEntry(event, event.deltaY * (event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? window.innerHeight : 1));
+        };
+        let touchY = 0;
+        const onTouchStart = (event: TouchEvent) => { touchY = event.touches[0]?.clientY ?? 0; };
+        const onTouchMove = (event: TouchEvent) => {
+          if (event.touches.length !== 1) return;
+          const nextY = event.touches[0].clientY;
+          captureEntry(event, touchY - nextY);
+          touchY = nextY;
+        };
+        const holdPosition = () => {
+          if (locked && Math.abs(window.scrollY - lockedY) > 0.5) {
+            window.scrollTo({ top: lockedY, behavior: "instant" });
+          }
+        };
+        const onKey = (event: KeyboardEvent) => {
+          if (!locked) return;
+          if (event.target instanceof Element && event.target.closest("input, textarea, select, [contenteditable], .nav_wrap")) return;
+          if (["Escape", "Tab"].includes(event.key)) {
+            release(event.shiftKey ? -1 : 1);
+            return;
+          }
+          if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "PageUp", "PageDown", " ", "Home", "End"].includes(event.key)) return;
+          event.preventDefault();
+          const backward = ["ArrowLeft", "ArrowUp", "PageUp"].includes(event.key) || (event.key === " " && event.shiftKey);
+          goTo(event.key === "Home" ? 0 : event.key === "End" ? items.length - 1 : active + (backward ? -1 : 1));
+        };
+        document.addEventListener("keydown", onKey);
+        window.addEventListener("scroll", holdPosition, { passive: true });
+        window.addEventListener("wheel", interceptEntry, { passive: false });
+        window.addEventListener("touchstart", onTouchStart, { passive: true });
+        window.addEventListener("touchmove", onTouchMove, { passive: false });
+        cleanups.push(() => {
+          locked = false;
+          observer.kill();
+          motion?.kill();
+          entryReset?.kill();
+          trigger.kill();
+          document.removeEventListener("keydown", onKey);
+          window.removeEventListener("scroll", holdPosition);
+          window.removeEventListener("wheel", interceptEntry);
+          window.removeEventListener("touchstart", onTouchStart);
+          window.removeEventListener("touchmove", onTouchMove);
+          section.classList.remove("is-animated");
+          section.style.removeProperty("--story-nav-height");
+          select(0);
+        });
+      });
+      return () => cleanups.forEach((cleanup) => cleanup());
+    });
+  }
+
+  initStoryTimeline();
+  document.addEventListener("astro:page-load", initStoryTimeline);
+  document.addEventListener("astro:before-swap", () => media?.revert());
+  document.fonts.ready.then(() => ScrollTrigger.refresh());
+</script>
+
+<style is:global>
+  @layer components {
+    .story_wrap {
+      --story-step: clamp(20rem, 33.333vw, 30rem);
+      background: var(--light-300);
+      color: var(--dark-900);
+      .story_inner {
+        position: relative;
+
+        padding-block: clamp(1.5rem, 5svh, 4rem) 2rem;
+      }
+      .story_rules { grid-template-columns: minmax(0, 2fr) minmax(0, 8fr); }
+      .story_rules > span:nth-child(n + 3) { display: none; }
+      .story_header { display: grid; grid-template-columns: var(--layout-columns); align-items: start; gap: 0; }
+      .story_label {
+        padding: var(--space-1);
+        .eyebrow_marker { width: 0.5rem; height: 0.75rem; background: url("/purpose-icon.svg") center / contain no-repeat; }
+        .eyebrow_text { font: var(--primary-regular) var(--label-size-small)/1.4 var(--label-family); text-transform: uppercase; &::before, &::after { display: none; } }
+      }
+      .story_title { grid-column: 2 / -1; margin: 0; padding-inline: var(--space-3); font: var(--primary-light) clamp(1.5rem, 2.22vw, 2rem)/1.2 var(--heading-family); &::before, &::after { display: none; } }
+      .story_stage { position: relative; margin-top: clamp(2rem, 5svh, 4rem); margin-left: 20%; }
+      .story_viewport { overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: thin; scroll-snap-type: x mandatory; &:focus-visible { outline: var(--focus-width) solid var(--brand-500); outline-offset: var(--focus-offset); } }
+      .story_track { display: flex; position: relative; width: max-content; list-style: none; margin: 0; padding: 0; }
+      .story_item { flex: 0 0 var(--story-step); width: var(--story-step); scroll-snap-align: start; }
+      .story_visual { height: clamp(10rem, 30svh, 20rem); display: flex; align-items: end; }
+      .story_art { position: relative; width: 65%; aspect-ratio: 1; display: grid; place-items: center; background: var(--white); }
+      .story_art img { width: 100%; height: 100%; object-fit: cover; }
+      .story_wordmark { font: var(--primary-medium) clamp(1.25rem, 2.5vw, 2.25rem)/1 var(--heading-family); }
+      .story_wordmark.finlender { color: var(--partner-finlender); font-family: var(--primary-family); font-weight: var(--primary-bold); font-style: italic; }
+      .story_draft { position: absolute; bottom: 1rem; font: var(--primary-regular) 0.625rem/1.2 var(--label-family); color: var(--neutral-500); }
+      .story_ruler { display: grid; align-items: center; height: 4.5rem; }
+      .story_ruler i { display: block; height: 3rem; border-left: 1px solid color-mix(in srgb, var(--dark-900) 55%, transparent); }
+      .story_description { display: flex; gap: var(--space-2); max-width: 22rem; margin: 0; padding-right: 2rem; font: var(--primary-regular) 1rem/1.4 var(--primary-family); }
+      .story_dot { flex: none; width: 0.5rem; height: 0.75rem; margin-top: 0.2rem; background: url("/purpose-icon.svg") center / contain no-repeat; }
+      .story_item-year { display: block; margin-top: var(--timeline-year-gap); color: var(--brand-500); font: var(--primary-light) 2rem/1 var(--heading-family); }
+      .story_year { display: none; margin: 0; color: var(--brand-500); font: var(--primary-light) clamp(3.5rem, 11svh, 6.75rem)/1 var(--heading-family); }
+      &.is-animated {
+        /* Keep following sections outside the viewport throughout the pin. */
+        .story_inner { min-height: calc(100dvh - var(--story-nav-height, var(--nav-height))); }
+        .story_viewport { overflow: clip; scroll-snap-type: none; }
+        .story_track { padding-left: var(--story-step); will-change: transform; }
+        .story_item { scroll-snap-align: none; }
+        .story_item-year { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+        .story_description { opacity: 0.2; transition: opacity var(--hover-duration) var(--hover-ease); }
+        .story_item.is-active .story_description { opacity: 1; }
+        .story_art { margin-left: -32.5%; transform: scale(0.5); transform-origin: bottom center; transition: transform var(--motion-timeline-duration) var(--motion-reveal-ease); }
+        .story_item.is-active .story_art { transform: scale(1); }
+        .story_year { display: block; padding: var(--timeline-year-gap) var(--site-gutter) 0; }
+      }
+      @media (width < 64rem) {
+        .story_rules { grid-template-columns: 1fr; }
+        .story_rules > span:nth-child(2) { display: none; }
+        .story_header { grid-template-columns: 1fr; gap: var(--space-4); }
+        .story_title { grid-column: 1; padding-inline: var(--space-2); }
+        .story_stage { margin-left: 0; }
+        &.is-animated .story_track { padding-left: 1rem; }
+        &.is-animated .story_art { margin-left: 0; }
+      }
+      @media (width < 48rem) {
+        --story-step: calc(100vw - 4rem);
+        .story_inner { padding-block: var(--space-5); }
+        .story_header { gap: var(--space-3); }
+        .story_stage { margin-top: 2rem; }
+        .story_visual { height: 11rem; }
+        .story_art { width: 10rem; }
+        .story_ruler { height: 3.5rem; }
+        .story_description { font-size: 0.875rem; padding-right: 1.5rem; }
+        .story_year { font-size: 3.5rem; }
+      }
+      @media (max-height: 650px) and (min-width: 768px) {
+        .story_inner { padding-block: var(--space-4); }
+        .story_stage { margin-top: 1.5rem; }
+        .story_visual { height: 10rem; }
+        .story_art { width: 10rem; }
+        .story_year { font-size: 3.5rem; }
+      }
+      @media (prefers-reduced-motion: reduce) { .story_viewport { scroll-snap-type: none; } }
+    }
+  }
+</style>

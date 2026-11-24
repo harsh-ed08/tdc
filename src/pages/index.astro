@@ -5,6 +5,7 @@ import Img from "@/components/media/Img.astro";
 import Purpose from "@/components/section/Purpose.astro";
 import MissionVision from "@/components/section/MissionVision.astro";
 import Leadership from "@/components/section/Leadership.astro";
+import StoryTimeline from "@/components/section/StoryTimeline.astro";
 import MainCta from "@/components/section/MainCta.astro";
 import CareersCta from "@/components/section/CareersCta.astro";
 import heroImage from "@/assets/images/about-hero-img.jpg";
@@ -12,7 +13,7 @@ import heroImage from "@/assets/images/about-hero-img.jpg";
 <Layout theme="dark" overlap>
   <section class="home-hero_wrap" aria-labelledby="home-hero-title">
     <Img class="home-hero_image" src={heroImage} variant="constrained" sizes="(max-width: 767px) 1600px, (max-width: 1023px) 1200px, 100vw" width={1440} height={810} loading="eager" fetchPriority="high" />
-    <div class="home-hero_inner">
+    <div class="home-hero_inner layout_frame">
       <div class="home-hero_rules layout_rules" aria-hidden="true"><span /><span /><span /></div>
       <Heading tag="h1" variant="inherit" id="home-hero-title" class="home-hero_title">
         <span>We exist so that no promising</span>{" "}
@@ -23,6 +24,7 @@ import heroImage from "@/assets/images/about-hero-img.jpg";
   </section>
   <Purpose />
   <MissionVision />
+  <StoryTimeline />
   <Leadership />
   <CareersCta />
   <MainCta />
@@ -51,9 +53,7 @@ import heroImage from "@/assets/images/about-hero-img.jpg";
         display: grid;
         grid-template-columns: var(--layout-columns);
         align-items: end;
-        width: calc(100% - 2 * var(--layout-gutter));
-        max-width: var(--layout-max-width);
-        margin-inline: auto;
+
         padding-block: 8rem 5rem;
       }
       .home-hero_rules {
@@ -62,12 +62,12 @@ import heroImage from "@/assets/images/about-hero-img.jpg";
       .home-hero_title {
         grid-column: 2 / -1;
         margin: 0;
-        padding-inline: 1rem;
+        padding-inline: var(--space-3);
         font-family: var(--heading-family);
         font-size: clamp(2rem, 3.889vw, 3.5rem);
         font-weight: var(--primary-light);
         line-height: 1;
-        letter-spacing: 0;
+        letter-spacing: var(--letter-spacing-normal);
         text-wrap: initial;
         &::before,
         &::after { display: none; }
@@ -84,7 +84,7 @@ import heroImage from "@/assets/images/about-hero-img.jpg";
         .home-hero_inner { padding-block: 6rem 3rem; }
         .home-hero_title {
           grid-column: 1 / -1;
-          padding-inline: 0.75rem;
+          padding-inline: var(--space-2);
           font-size: clamp(2rem, 6vw, 2.75rem);
           line-height: 1.1;
         }

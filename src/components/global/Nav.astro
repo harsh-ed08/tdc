@@ -4,6 +4,7 @@ import { navigation, contactHref } from "@/data/navigation";
 import NavPromo from "./NavPromo.astro";
 import RollLabel from "@/components/typography/RollLabel.astro";
 import CtaArrow from "@/components/typography/CtaArrow.astro";
+import MenuChevron from "@/assets/icons/menu-chevron.svg";
 interface Props {
   /** Set to false to omit the component. */
   render?: boolean;
@@ -38,20 +39,13 @@ const { render = true, overlap = false } = Astro.props;
                   aria-controls={`nav-panel-${index}`}
                 >
                   {item.label}
-                  <img
+                  <svg
                     class="nav_chevron"
-                    src="/header/chevron.svg"
                     width="16"
                     height="16"
-                    alt=""
-                  />
-                  <img
-                    class="nav_active-chevron"
-                    src="/navigation/active-chevron.svg"
-                    width="16"
-                    height="16"
-                    alt=""
-                  />
+                    viewBox="0 0 16 16"
+                    aria-hidden="true"
+                  ><path d="M5.34395 14.4355L4.39779 13.4893L9.88745 7.99964L4.39779 2.50997L5.34395 1.5638L11.7798 7.99964L5.34395 14.4355Z" fill="currentColor" /></svg>
                 </button>
                 <div
                   class:list={["nav_panel", index === 0 && "business"]}
@@ -77,12 +71,7 @@ const { render = true, overlap = false } = Astro.props;
                               href="#"
                             >
                               {group.label}
-                              <img
-                                src="/footer/chevron.svg"
-                                width="10.508"
-                                height="10.508"
-                                alt=""
-                              />
+                              <MenuChevron class="nav_link-chevron" aria-hidden="true" focusable="false" />
                             </a>
                           )}
                           {index === 0 ? (
@@ -95,13 +84,7 @@ const { render = true, overlap = false } = Astro.props;
                               aria-controls={`nav-group-${groupIndex}`}
                             >
                               {group.label}
-                              <img
-                                class="nav_group-arrow"
-                                src="/footer/chevron.svg"
-                                width="10.508"
-                                height="10.508"
-                                alt=""
-                              />
+                              <MenuChevron class="nav_link-chevron nav_group-arrow" aria-hidden="true" focusable="false" />
                               <img
                                 class="nav_plus"
                                 src="/navigation/plus.svg"
@@ -121,12 +104,7 @@ const { render = true, overlap = false } = Astro.props;
                             <a class="nav_group-heading" href="#">
                               {group.label}
                               {group.action && (
-                                <img
-                                  src="/footer/chevron.svg"
-                                  width="10.508"
-                                  height="10.508"
-                                  alt=""
-                                />
+                                <MenuChevron class="nav_link-chevron" aria-hidden="true" focusable="false" />
                               )}
                             </a>
                           )}
@@ -148,24 +126,14 @@ const { render = true, overlap = false } = Astro.props;
                                     <span class="nav_link-text">
                                       {link.label}
                                     </span>
-                                    <img
-                                      src="/footer/chevron.svg"
-                                      width="10.508"
-                                      height="10.508"
-                                      alt=""
-                                    />
+                                    <MenuChevron class="nav_link-chevron" aria-hidden="true" focusable="false" />
                                   </a>
                                 ) : (
                                   <span aria-disabled="true">
                                     <span class="nav_link-text">
                                       {link.label}
                                     </span>
-                                    <img
-                                      src="/footer/chevron.svg"
-                                      width="10.508"
-                                      height="10.508"
-                                      alt=""
-                                    />
+                                    <MenuChevron class="nav_link-chevron" aria-hidden="true" focusable="false" />
                                   </span>
                                 )}
                               </li>
@@ -224,6 +192,7 @@ const { render = true, overlap = false } = Astro.props;
   )
 }
 <script>
+  import { durationToken } from "@/utils/design-tokens";
   for (const nav of document.querySelectorAll<HTMLElement>(".nav_wrap")) {
     const toggle = nav.querySelector<HTMLButtonElement>(".nav_toggle")!;
     const backdrop = nav.querySelector<HTMLButtonElement>(".nav_backdrop")!;
@@ -312,7 +281,7 @@ const { render = true, overlap = false } = Astro.props;
           backdrop.hidden = mobile.matches;
         };
         if (switching && !mobile.matches && !reducedMotion.matches) {
-          switchTimer = setTimeout(reveal, 280);
+          switchTimer = setTimeout(reveal, durationToken(nav, "--motion-close-duration", 280));
         } else reveal();
       };
       button.addEventListener("click", (event) => {
@@ -407,7 +376,7 @@ const { render = true, overlap = false } = Astro.props;
 <style is:global>
   @layer components {
     .nav_wrap {
-      --_rule: 0.03125rem solid
+      --_rule: var(--border-hairline) solid
         color-mix(in srgb, currentcolor 20%, transparent);
       position: sticky;
       top: 0;
@@ -439,8 +408,8 @@ const { render = true, overlap = false } = Astro.props;
         text-decoration: none;
       }
       :is(button, a):focus-visible {
-        outline: 0.125rem solid var(--brand-500);
-        outline-offset: 0.25rem;
+        outline: var(--focus-width) solid var(--brand-500);
+        outline-offset: var(--focus-offset);
       }
       .nav_rules {
         left: 50%;
@@ -460,7 +429,7 @@ const { render = true, overlap = false } = Astro.props;
         display: flex;
         align-items: center;
         align-self: stretch;
-        padding-inline: 1rem;
+        padding-inline: var(--space-3);
 
       }
       .nav_brand {
@@ -473,12 +442,12 @@ const { render = true, overlap = false } = Astro.props;
         display: flex;
         align-items: center;
 
-        padding-inline: 1rem;
+        padding-inline: var(--space-3);
       }
       .nav_links {
         display: flex;
         align-items: center;
-        gap: 1rem;
+        gap: var(--space-3);
         list-style: none;
         padding: 0;
         margin: 0;
@@ -486,43 +455,38 @@ const { render = true, overlap = false } = Astro.props;
       .nav_label {
         display: flex;
         align-items: center;
-        gap: 0.5rem;
+        gap: var(--space-1);
         min-height: 2.75rem;
-        font: 300 1rem/normal var(--heading-family);
+        font: var(--primary-light) 1rem/normal var(--heading-family);
       }
-      .nav_chevron,
-      .nav_active-chevron {
+      .nav_chevron {
         width: 1rem;
         height: 1rem;
       }
       .nav_chevron {
         rotate: 90deg;
-      }
-      .nav_active-chevron {
-        display: none;
+        transition:
+          rotate var(--hover-duration) var(--hover-ease),
+          fill var(--hover-duration) var(--hover-ease);
       }
       .nav_label[aria-expanded="true"] {
         color: var(--brand-500);
         .nav_chevron {
-          display: none;
-        }
-        .nav_active-chevron {
-          display: block;
           rotate: -90deg;
         }
       }
       .nav_contact {
         display: flex;
-        gap: 0.5rem;
+        gap: var(--space-1);
         align-items: center;
         justify-content: flex-end;
         justify-self: end;
         align-self: center;
         width: fit-content;
-        font: 400 1rem/1 var(--label-family);
+        font: var(--primary-regular) var(--label-size-main)/1 var(--label-family);
         margin-right: 1rem;
       }
-      .nav_contact img {
+      .nav_contact :is(img, .nav_link-chevron) {
         width: 1rem;
         height: 1.5158125rem;
       }
@@ -545,14 +509,14 @@ const { render = true, overlap = false } = Astro.props;
         border-bottom: var(--_rule);
         clip-path: inset(0 0 0 0);
         transition:
-          clip-path 550ms cubic-bezier(0.65, 0, 0.35, 1),
+          clip-path var(--motion-reveal-duration) var(--motion-reveal-ease),
           visibility 0s;
         opacity: 1;
         visibility: visible;
       }
       @media (width >= 64rem) {
         .nav_label {
-          font: 500 1.125rem/1.3 var(--primary-family);
+          font: var(--primary-medium) 1.125rem/1.3 var(--primary-family);
         }
         .nav_panel[hidden] {
           display: block !important;
@@ -560,8 +524,8 @@ const { render = true, overlap = false } = Astro.props;
           visibility: hidden;
           pointer-events: none;
           transition:
-            clip-path 280ms cubic-bezier(0.4, 0, 0.2, 1),
-            visibility 0s linear 280ms;
+            clip-path var(--motion-close-duration) var(--motion-close-ease),
+            visibility 0s linear var(--motion-close-duration);
         }
       }
       :is(a, button) {
@@ -572,10 +536,10 @@ const { render = true, overlap = false } = Astro.props;
       :is(a, button:not(:disabled)):hover {
         color: var(--brand-500);
       }
-      :is(.nav_contact, .nav_group-links a) img {
+      :is(.nav_contact, .nav_group-links a) :is(img, .nav_link-chevron) {
         transition: transform var(--hover-duration) var(--hover-ease);
       }
-      .nav_group-links a:is(:hover, :focus-visible) img {
+      .nav_group-links a:is(:hover, :focus-visible) :is(img, .nav_link-chevron) {
         transform: translateX(0.2rem);
       }
       .nav_brand {
@@ -596,11 +560,11 @@ const { render = true, overlap = false } = Astro.props;
         align-items: center;
         align-self: start;
         justify-self: start;
-        gap: 0.5rem;
+        gap: var(--space-1);
         color: var(--brand-500);
-        font: 300 1.125rem/normal var(--heading-family);
+        font: var(--primary-light) 1.125rem/normal var(--heading-family);
       }
-      .nav_panel-title img {
+      .nav_panel-title :is(img, .nav_link-chevron) {
         width: 1rem;
         height: 1rem;
         flex: 0 0 1rem;
@@ -610,21 +574,17 @@ const { render = true, overlap = false } = Astro.props;
         width: fit-content;
         max-width: 100%;
       }
-      .nav_panel-title img,
-      .nav_group-heading img,
-      .nav-promo_action img {
+      .nav_panel-title :is(img, .nav_link-chevron),
+      .nav_group-heading :is(img, .nav_link-chevron),
+      .nav-promo_action :is(img, .nav_link-chevron) {
         transition: transform var(--hover-duration) var(--hover-ease);
       }
-      :is(.nav_panel-title, .nav_group-heading):is(:hover, :focus-visible) img {
+      :is(.nav_panel-title, .nav_group-heading):is(:hover, :focus-visible) :is(img, .nav_link-chevron) {
         transform: translateX(0.2rem);
       }
       .nav_panel :is(.nav_link, .nav_group-heading, .nav-promo_action) {
-        text-decoration-line: underline;
-        text-decoration-color: transparent;
-        text-underline-offset: 0.25em;
-        transition:
-          color var(--hover-duration) var(--hover-ease),
-          text-decoration-color var(--hover-duration) var(--hover-ease);
+        text-decoration: none;
+        transition: color var(--hover-duration) var(--hover-ease);
       }
       .nav_panel
         :is(.nav_link, .nav_group-heading, .nav-promo_action):is(
@@ -632,13 +592,12 @@ const { render = true, overlap = false } = Astro.props;
           :focus-visible
         ) {
         color: var(--brand-500);
-        text-decoration-color: currentcolor;
       }
       .nav_groups {
         display: flex;
         flex-direction: column;
-        gap: 4rem;
-        padding-inline: 1rem;
+        gap: var(--space-8);
+        padding-inline: var(--space-3);
       }
       .nav_group {
         min-width: 0;
@@ -646,9 +605,9 @@ const { render = true, overlap = false } = Astro.props;
       .nav_group-toggle,
       .nav_group-heading {
         display: flex;
-        gap: 0.5rem;
+        gap: var(--space-1);
         align-items: center;
-        font: 400 1rem/1.3 var(--label-family);
+        font: var(--primary-regular) var(--label-size-main)/1.3 var(--label-family);
         text-transform: uppercase;
       }
       .nav_group-heading {
@@ -668,11 +627,11 @@ const { render = true, overlap = false } = Astro.props;
       .nav_group-links {
         display: flex;
         flex-direction: column;
-        gap: 1rem;
+        gap: var(--space-3);
         padding: 0;
         margin: 1rem 0 0;
         list-style: none;
-        font: 300 1rem/normal var(--heading-family);
+        font: var(--primary-light) 1rem/normal var(--heading-family);
       }
       .nav_group-links:empty {
         display: none;
@@ -680,26 +639,26 @@ const { render = true, overlap = false } = Astro.props;
       .nav_group-links li > :is(a, span) {
         display: inline-flex;
         align-items: center;
-        gap: 0.5rem;
+        gap: var(--space-1);
         max-width: 100%;
       }
       .nav_link-text {
         text-box: trim-both cap alphabetic;
       }
-      .nav_group-links img,
-      .nav_group-heading img {
+      .nav_group-links :is(img, .nav_link-chevron),
+      .nav_group-heading :is(img, .nav_link-chevron) {
         flex: none;
         width: 0.65675rem;
         height: 0.65675rem;
       }
       .nav_panel-promo {
-        padding-inline: 1rem;
+        padding-inline: var(--space-3);
       }
       .business .nav_groups {
         grid-column: 2 / -1;
         display: grid;
         grid-template-columns: minmax(0, 3fr) minmax(0, 2.5fr) minmax(0, 2.5fr);
-        gap: 2rem;
+        gap: var(--space-5);
       }
       .business .nav_panel-promo {
         grid-column: 2 / -1;
@@ -717,7 +676,7 @@ const { render = true, overlap = false } = Astro.props;
         }
         .nav_group-links {
           margin-top: 1rem;
-          gap: 1rem;
+          gap: var(--space-3);
         }
         .nav_panel-inner {
           position: relative;
@@ -730,15 +689,39 @@ const { render = true, overlap = false } = Astro.props;
 
             background: linear-gradient(
               to right,
-              transparent calc(20% - 0.03125rem),
+              transparent 20%,
               color-mix(in srgb, var(--dark-900) 20%, transparent)
-                calc(20% - 0.03125rem) 20%,
-              transparent 20% calc(50% - 0.03125rem),
+                20% calc(20% + 1px),
+              transparent calc(20% + 1px) 50%,
               color-mix(in srgb, var(--dark-900) 20%, transparent)
-                calc(50% - 0.03125rem) 50%,
-              transparent 50%
+                50% calc(50% + 1px),
+              transparent calc(50% + 1px)
             );
           }
+          /* Use the same percentage coordinates as the full-height rules.
+             Separate borders can round to a neighbouring device pixel. */
+          &::after {
+            content: "";
+            position: absolute;
+            grid-column: 1 / -1;
+            grid-row: 1 / 2;
+            inset: 0;
+            pointer-events: none;
+            background: linear-gradient(to right,
+              transparent 20%,
+              var(--dark-900) 20% calc(20% + 1px),
+              transparent calc(20% + 1px));
+          }
+        }
+        .business .nav_panel-inner::after {
+          background: linear-gradient(to right,
+            transparent 20%,
+            var(--dark-900) 20% calc(20% + 1px),
+            transparent calc(20% + 1px) 50%,
+            var(--dark-900) 50% calc(50% + 1px),
+            transparent calc(50% + 1px) 75%,
+            var(--dark-900) 75% calc(75% + 1px),
+            transparent calc(75% + 1px));
         }
         .business .nav_panel-title {
           padding-left: 3rem;
@@ -753,13 +736,7 @@ const { render = true, overlap = false } = Astro.props;
           align-items: stretch;
         }
         .business .nav_group {
-          padding-inline: 1rem;
-          border-left: 0.03125rem solid
-            color-mix(in srgb, var(--dark-900) 60%, transparent);
-        }
-        .business .nav_group:last-child {
-          border-left: 0.03125rem solid
-            color-mix(in srgb, var(--dark-900) 60%, transparent);
+          padding-inline: var(--space-3);
         }
         .business .nav_group-toggle {
           color: var(--dark-900);
@@ -787,17 +764,15 @@ const { render = true, overlap = false } = Astro.props;
         .business .nav_group:last-child .nav_group-links {
           padding-left: 0.5rem;
         }
-        .business .nav_group-links img {
+        .business .nav_group-links :is(img, .nav_link-chevron) {
           display: none;
         }
         .nav_panel:not(.business) {
-          .nav_panel-title img {
+          .nav_panel-title :is(img, .nav_link-chevron) {
             display: none;
           }
           .nav_groups {
-            border-left: 0.03125rem solid
-              color-mix(in srgb, var(--dark-900) 60%, transparent);
-            gap: 4rem;
+            gap: var(--space-8);
           }
           .nav_group-links {
             color: var(--neutral-500);
@@ -813,7 +788,7 @@ const { render = true, overlap = false } = Astro.props;
           .nav_link-text {
             text-box: normal;
           }
-          .nav_group-links img {
+          .nav_group-links :is(img, .nav_link-chevron) {
             display: none;
           }
           .nav_panel-promo {
@@ -834,7 +809,7 @@ const { render = true, overlap = false } = Astro.props;
         opacity: 1;
         visibility: visible;
         transition:
-          opacity 550ms cubic-bezier(0.65, 0, 0.35, 1),
+          opacity var(--motion-reveal-duration) var(--motion-reveal-ease),
           visibility 0s;
       }
       .nav_backdrop[hidden] {
@@ -843,8 +818,8 @@ const { render = true, overlap = false } = Astro.props;
         visibility: hidden;
         pointer-events: none;
         transition:
-          opacity 400ms ease,
-          visibility 0s linear 400ms;
+          opacity var(--motion-fade-duration) ease,
+          visibility 0s linear var(--motion-fade-duration);
       }
       @media (width < 64rem) {
         .nav_desktop-heading {
@@ -857,7 +832,7 @@ const { render = true, overlap = false } = Astro.props;
           min-height: calc(3rem - 0.03125rem);
         }
         .nav_logo {
-          padding-inline: 0.75rem;
+          padding-inline: var(--space-2);
           margin-right: auto;
         }
         .nav_brand {
@@ -876,7 +851,7 @@ const { render = true, overlap = false } = Astro.props;
           padding: 0 0.75rem 0 1rem;
 
         }
-        .nav_toggle img {
+        .nav_toggle :is(img, .nav_link-chevron) {
           width: 1.25rem;
           height: 1.25rem;
           max-width: none;
@@ -922,7 +897,7 @@ const { render = true, overlap = false } = Astro.props;
           display: flex;
           flex-direction: column;
           align-items: stretch;
-          gap: 2rem;
+          gap: var(--space-5);
         }
         .nav_label {
           font-size: 0.875rem;
@@ -931,7 +906,6 @@ const { render = true, overlap = false } = Astro.props;
           justify-content: space-between;
         }
         .nav_chevron {
-          content: url("/navigation/chevron.svg");
           rotate: 90deg;
         }
         .nav_panel {
@@ -959,7 +933,7 @@ const { render = true, overlap = false } = Astro.props;
         }
         .nav_groups {
           padding: 0;
-          gap: 1.5rem;
+          gap: var(--space-4);
         }
         .nav_group {
 
@@ -981,13 +955,13 @@ const { render = true, overlap = false } = Astro.props;
         .nav_group-toggle[aria-expanded="true"] {
           color: var(--brand-500);
           .nav_plus {
-            display: block;
-          }
-          .nav_minus {
             display: none;
           }
+          .nav_minus {
+            display: block;
+          }
         }
-        .nav_minus {
+        .nav_plus {
           display: block;
         }
         .nav_plus,
@@ -997,7 +971,7 @@ const { render = true, overlap = false } = Astro.props;
         }
         .nav_group-links {
           font-size: 0.875rem;
-          gap: 1rem;
+          gap: var(--space-3);
         }
         .business .nav_group-links:not(.expanded) {
           display: none;

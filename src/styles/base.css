@@ -11,6 +11,9 @@
   --brand-500: #fe6730;
   --brand-400: #f17608;
   --brand-text: var(--dark-900);
+  --white: #fff;
+  /* Partner identity, used only for the FinLender wordmark. */
+  --partner-finlender: #07467d;
 
   /* Typography primitives */
   --primary-family: 'Switzer', system-ui, sans-serif;
@@ -36,6 +39,8 @@
 
   /* Borders & focus */
   --border-width: 0.09375rem;
+  --border-hairline: 0.03125rem;
+  --border-thin: 1px;
   --focus-width: 0.125rem;
   --focus-offset: 0.1827rem;
   --focus-offset-inner: calc(var(--focus-width) * -1);
@@ -43,6 +48,17 @@
   /* Hover motion */
   --hover-duration: 200ms;
   --hover-ease: ease;
+  --motion-reveal-duration: 550ms;
+  --motion-close-duration: 280ms;
+  --motion-fade-duration: 400ms;
+  --motion-timeline-duration: 800ms;
+  --motion-reveal-ease: cubic-bezier(0.65, 0, 0.35, 1);
+  --motion-close-ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-roll-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --motion-roll-duration: 300ms;
+  --label-size-main: 1rem;
+  --label-size-small: 0.875rem;
+  --timeline-year-gap: calc(var(--space-6-max) / 16 * 1rem);
 
   /* Opening motion */
   --open-duration: var(--hover-duration);
@@ -666,7 +682,7 @@ h6,
 /* Shared section grid: all page rules use the same responsive geometry. */
 :root {
   --layout-gutter: var(--space-8);
-  --layout-max-width: 90rem;
+  --layout-max-width: var(--max-width-main);
   --layout-columns: minmax(0, 2fr) minmax(0, 3fr) minmax(0, 5fr);
 }
 @media (width < 64rem) {

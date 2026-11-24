@@ -226,8 +226,18 @@
   }
 }
 
+:has(> .layout_rules) {
+  isolation: isolate;
+}
+.layout_frame {
+  position: relative;
+  width: calc(100% - 2 * var(--layout-gutter));
+  max-width: var(--layout-max-width);
+  margin-inline: auto;
+}
 .layout_rules {
   position: absolute;
+  z-index: 3;
   inset: 0;
   display: grid;
   grid-template-columns: var(--layout-columns);
@@ -242,7 +252,7 @@
   content: "";
   position: absolute;
   inset-block: 0;
-  width: 0.03125rem;
+  width: var(--border-hairline);
   background: var(--layout-rule-color, color-mix(in srgb, currentColor 20%, transparent));
 }
 .layout_rules > span::before { left: 0; }

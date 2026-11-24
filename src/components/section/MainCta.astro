@@ -10,7 +10,7 @@ import background from "@/assets/images/main-cta-desktop.avif";
 <section class="main-cta_wrap" aria-labelledby="main-cta-title">
   <Image class="main-cta_image" src={background} alt="" widths={[750, 1440, 1920, 2880]} sizes="(max-width: 767px) 950px, 100vw" loading="lazy" />
   <img class="main-cta_overlay" src="/cta-overlay.svg" alt="" width="547" height="860" loading="lazy" />
-  <div class="main-cta_inner">
+  <div class="main-cta_inner layout_frame">
     <div class="main-cta_rules layout_rules" aria-hidden="true"><span /><span /><span /></div>
     <div class="main-cta_content">
       <Heading tag="h2" variant="inherit" id="main-cta-title" class="main-cta_title">Certain to the dot.</Heading>
@@ -56,9 +56,7 @@ import background from "@/assets/images/main-cta-desktop.avif";
         display: grid;
         grid-template-columns: var(--layout-columns);
         align-items: end;
-        width: calc(100% - 2 * var(--layout-gutter));
-        max-width: var(--layout-max-width);
-        margin-inline: auto;
+
         padding-block: 5rem;
       }
       .main-cta_rules {
@@ -66,7 +64,7 @@ import background from "@/assets/images/main-cta-desktop.avif";
       }
       .main-cta_content {
         grid-column: 2 / -1;
-        padding-inline: 1rem;
+        padding-inline: var(--space-3);
       }
       .main-cta_title {
         margin: 0;
@@ -74,7 +72,7 @@ import background from "@/assets/images/main-cta-desktop.avif";
         font-size: clamp(2rem, 3.333vw, 3rem);
         font-weight: var(--primary-light);
         line-height: 1.15;
-        letter-spacing: 0;
+        letter-spacing: var(--letter-spacing-normal);
         &::before, &::after { display: none; }
       }
       .main-cta_description {
@@ -88,11 +86,11 @@ import background from "@/assets/images/main-cta-desktop.avif";
       .main-cta_link {
         display: flex;
         align-items: center;
-        gap: 0.5rem;
+        gap: var(--space-1);
         width: fit-content;
         min-height: 2.75rem;
-        font: 400 1rem/1 var(--label-family);
-        &:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
+        font: var(--primary-regular) var(--label-size-main)/1 var(--label-family);
+        &:focus-visible { outline: var(--focus-width) solid currentColor; outline-offset: var(--focus-offset); }
       }
       @media (width < 64rem) {
         .main-cta_content { grid-column: 1 / -1; }
@@ -104,7 +102,7 @@ import background from "@/assets/images/main-cta-desktop.avif";
         .main-cta_overlay { left: 0; width: 100%; object-fit: fill; }
         .main-cta_inner { padding-block: 4.25rem; }
         .main-cta_rules { display: none; }
-        .main-cta_content { padding-inline: 0.75rem; }
+        .main-cta_content { padding-inline: var(--space-2); }
         .main-cta_title { font-size: 1.375rem; line-height: 1.3; }
         .main-cta_description {
           max-width: 18rem;

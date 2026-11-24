@@ -156,7 +156,12 @@ const named = {
         <Icon class="button_mark" src={marks.close} variant="small" />
       )}
       {variant === "arrow" && (
-        <Icon class="button_mark" src={marks.arrow} variant="small" />
+        <span class="button_arrow-roll" data-roll-motion aria-hidden="true">
+          <span data-roll-track>
+            <Icon class="button_mark" src={marks.arrow} variant="small" />
+            <Icon class="button_mark" src={marks.arrow} variant="small" />
+          </span>
+        </span>
       )}
     </Tag>
   )
@@ -241,6 +246,14 @@ const named = {
       }
       &.back .button_mark {
         rotate: 180deg;
+      }
+      .button_arrow-roll {
+        display: block;
+        width: 1em;
+        height: 1em;
+        overflow: clip;
+        [data-roll-track] { display: block; }
+        .button_mark { width: 1em; height: 1em; }
       }
       &.play .button_pause {
         display: none;

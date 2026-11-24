@@ -12,7 +12,7 @@ const leaders = [
 ---
 
 <section class="leadership_wrap theme-light" aria-labelledby="leadership-title">
-  <div class="leadership_inner">
+  <div class="leadership_inner layout_frame">
     <div class="leadership_rules layout_rules" aria-hidden="true"><span /><span /></div>
     <Eyebrow tag="h2" id="leadership-title" class="leadership_label">Leadership</Eyebrow>
     <div class="leadership_cards">
@@ -51,9 +51,7 @@ const leaders = [
         position: relative;
         display: grid;
         grid-template-columns: var(--layout-columns);
-        width: calc(100% - 2 * var(--layout-gutter));
-        max-width: var(--layout-max-width);
-        margin-inline: auto;
+
         padding-block: clamp(3rem, 5.56vw, 5rem) clamp(4rem, 6.67vw, 6rem);
       }
       .leadership_rules {
@@ -62,7 +60,7 @@ const leaders = [
       .leadership_label {
         grid-column: 1;
         align-self: start;
-        gap: 0.5rem;
+        gap: var(--space-1);
         padding: 0.375rem 0.5rem;
         .eyebrow_marker {
           width: 0.5rem;
@@ -97,8 +95,8 @@ const leaders = [
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 1rem;
-        padding: 1rem;
+        gap: var(--space-3);
+        padding: var(--space-3);
       }
       .leadership_name {
         margin: 0;
@@ -106,7 +104,7 @@ const leaders = [
         font-size: clamp(1.25rem, 1.67vw, 1.5rem);
         font-weight: var(--primary-regular);
         line-height: 1.3;
-        letter-spacing: 0;
+        letter-spacing: var(--letter-spacing-normal);
         &::before, &::after { display: none; }
       }
       .leadership_role {
@@ -124,9 +122,9 @@ const leaders = [
         height: 2.75rem;
         margin-right: -0.625rem;
         color: var(--neutral-500);
-        transition: color 180ms ease;
+        transition: color var(--hover-duration) var(--hover-ease);
         &:hover, &:focus-visible { color: var(--brand-500); }
-        &:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+        &:focus-visible { outline: var(--focus-width) solid currentColor; outline-offset: var(--focus-offset); }
       }
       .leadership_social-icon {
         display: block;
@@ -137,12 +135,12 @@ const leaders = [
         .leadership_social { transition: none; }
       }
       @media (width < 64rem) {
-        .leadership_label { grid-column: 1 / -1; margin-bottom: 2rem; }
+        .leadership_label { grid-column: 1 / -1; margin-bottom: var(--space-5); }
         .leadership_cards { grid-column: 1 / -1; }
       }
       @media (width < 48rem) {
-        .leadership_cards { grid-template-columns: minmax(0, 1fr); gap: 2.5rem; }
-        .leadership_details { padding-inline: 0.75rem; }
+        .leadership_cards { grid-template-columns: minmax(0, 1fr); gap: var(--space-6); }
+        .leadership_details { padding-inline: var(--space-2); }
       }
     }
   }

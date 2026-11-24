@@ -10,9 +10,10 @@ interface Props extends HTMLAttributes<"div"> {
   render?: boolean;
 }
 const { render = true, class: className, ...rest } = Astro.props;
-const headings = ['display', 'h1', 'h2', 'h3', 'h4', 'h6'] as const;
+const headings = ['display', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'] as const;
 const bodyStyles = ['large', 'main', 'small'] as const;
 const copy = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.';
+const siteSwatches = ['light-300', 'dark-900', 'brand-500', 'neutral-500', 'white', 'partner-finlender'];
 ---
 
 {render && <div class:list={['style-guide_wrap', className]} {...rest}>
@@ -76,17 +77,41 @@ const copy = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.';
       <div class="style-guide_space padding"><div>Site padding</div></div>
     </div>
   </Section>
+  <Section id="site-patterns" containerClass="style-guide_layout">
+    <div class="style-guide_description">
+      <Heading class="style-guide_section-title">Site patterns</Heading>
+      <Paragraph>The homepage uses the same Lumos tokens, with a shared editorial grid and documented motion settings.</Paragraph>
+    </div>
+    <div class="style-guide_site-patterns">
+      <Heading tag="h3" variant="h5">Site palette</Heading>
+      <div class="style-guide_swatches">
+        {siteSwatches.map(token => <div><span class="style-guide_swatch" style={`background: var(--${token})`} /><code>--{token}</code></div>)}
+      </div>
+      <Heading tag="h3" variant="h5">Layout and spacing</Heading>
+      <Paragraph><code>layout_frame</code> and <code>layout_rules</code> share <code>--layout-gutter</code>, <code>--layout-max-width</code>, and <code>--layout-columns</code>. Standard spacing uses <code>--space-1</code> through <code>--space-8</code>.</Paragraph>
+      <div class="style-guide_grid-sample layout_frame"><div class="layout_rules" aria-hidden="true"><span /><span /><span /></div><span>Shared responsive grid</span></div>
+      <Heading tag="h3" variant="h5">Labels and motion</Heading>
+      <p class="style-guide_mono">Main label · --label-size-main</p>
+      <p class="style-guide_mono small">Small label · --label-size-small</p>
+      <Paragraph>Hover effects use <code>--hover-duration</code> and <code>--hover-ease</code>. Reveals, closing panels, and timeline art use the <code>--motion-*</code> tokens. The timeline year gap stays at 40px through <code>--timeline-year-gap</code>.</Paragraph>
+    </div>
+  </Section>
 </div>}
 
 <style is:global>
   @layer components {
     .style-guide_wrap {
+      .style-guide_site-patterns { display: grid; gap: var(--space-5); min-width: 0; }
+      .style-guide_swatches { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); }
+      .style-guide_swatches code { overflow-wrap: anywhere; }
+      .style-guide_swatch { display: block; height: var(--space-8); border: var(--border-thin) solid var(--border); margin-bottom: var(--space-2); }
+      .style-guide_grid-sample { padding-block: var(--space-8); text-align: center; background: var(--light-300); color: var(--dark-900); }
       background: var(--light-100);
       color: var(--dark-800);
       .style-guide_hero { background: var(--brand-400); }
       .style-guide_intro { align-items: center; gap: var(--space-8); text-align: center; }
       .style-guide_logo { width: 10.125rem; height: 2rem; }
-      .style-guide_title { font-family: var(--guide-family); font-size: clamp(3rem, 7.78vw, 7rem); font-weight: 500; line-height: 1; letter-spacing: -0.03em; text-box-trim: trim-both; text-box-edge: cap alphabetic; }
+      .style-guide_title { font-family: var(--guide-family); font-size: clamp(3rem, 7.78vw, 7rem); font-weight: var(--primary-medium); line-height: 1; letter-spacing: -0.03em; text-box-trim: trim-both; text-box-edge: cap alphabetic; }
       .style-guide_caption { display: flex; align-items: center; gap: var(--space-3); font: 1rem/1.5 var(--guide-family); }
       .style-guide_badge { display: inline-block; padding: 0.6875rem 1.125rem; border-radius: var(--radius-small); background: var(--brand-400); color: var(--dark-800); font: 1rem/1.5 var(--guide-family); text-box-trim: trim-both; text-box-edge: cap alphabetic; }
       .style-guide_caption .style-guide_badge { background: var(--light-100); }
@@ -94,21 +119,21 @@ const copy = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.';
       .style-guide_layout.typography { grid-template-columns: minmax(0, 551fr) minmax(0, 777fr); }
       .style-guide_description { display: flex; flex-direction: column; gap: var(--space-6); font: 1rem/1.5 var(--guide-family); }
       .style-guide_description > .text { max-width: 34ch; }
-      .style-guide_section-title { font-family: var(--guide-family); font-size: clamp(2.5rem, 5.56vw, 5rem); font-weight: 400; line-height: 1; letter-spacing: -0.03em; text-box-trim: trim-both; text-box-edge: cap alphabetic; }
+      .style-guide_section-title { font-family: var(--guide-family); font-size: clamp(2.5rem, 5.56vw, 5rem); font-weight: var(--primary-regular); line-height: 1; letter-spacing: -0.03em; text-box-trim: trim-both; text-box-edge: cap alphabetic; }
       .style-guide_samples { min-width: 0; }
-      .style-guide_row { display: grid; grid-template-columns: minmax(0, 211fr) minmax(0, 550fr); gap: var(--space-3); align-items: center; padding-block: var(--space-5); border-top: 0.09375rem solid var(--dark-700); }
+      .style-guide_row { display: grid; grid-template-columns: minmax(0, 211fr) minmax(0, 550fr); gap: var(--space-3); align-items: center; padding-block: var(--space-5); border-top: var(--border-width) solid var(--dark-700); }
       .style-guide_specimen { text-wrap: initial; }
       .style-guide_pair { display: flex; flex-direction: column; gap: var(--space-3); min-width: 0; }
       .style-guide_light { font-weight: var(--primary-light); }
       .style-guide_medium { font-weight: var(--primary-medium); }
-      .style-guide_mono { font-family: var(--label-family); font-size: 1rem; line-height: 1; text-transform: uppercase; }
-      .style-guide_mono.small { font-size: 0.875rem; }
+      .style-guide_mono { font-family: var(--label-family); font-size: var(--label-size-main); line-height: 1; text-transform: uppercase; }
+      .style-guide_mono.small { font-size: var(--label-size-small); }
       .style-guide_cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); }
       .style-guide_card { padding: var(--space-5); display: flex; flex-direction: column; align-items: start; gap: var(--space-7); }
       .style-guide_card-copy { display: flex; flex-direction: column; gap: var(--space-3); }
       .style-guide_card.theme-dark { --text: var(--light-300); }
       .style-guide_card.theme-light .style-guide_card-title { color: var(--brand-500); }
-      .style-guide_cta { font-family: var(--label-family); font-size: 1rem; font-weight: 500; border: 0; padding: 0; }
+      .style-guide_cta { font-family: var(--label-family); font-size: 1rem; font-weight: var(--primary-medium); border: 0; padding: 0; }
       .style-guide_cta .button_text { display: flex; align-items: center; gap: var(--space-1); }
       .style-guide_cta img { width: 1rem; height: 1.5158125rem; object-fit: contain; }
       .style-guide_global { background: var(--dark-800); color: var(--light-100); }
