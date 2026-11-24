@@ -145,14 +145,14 @@ const { render = true, overlap = false } = Astro.props;
                     <div class="nav_panel-promo">
                       <NavPromo variant={index === 0 ? "wide" : "compact"} />
                     </div>
+                    <div class="nav_mobile-promo">
+                      <NavPromo variant="mobile" />
+                    </div>
                   </div>
                 </div>
               </li>
             ))}
           </ul>
-          <div class="nav_mobile-promo">
-            <NavPromo variant="mobile" />
-          </div>
         </nav>
         <a class="nav_contact" href={contactHref}>
           <RollLabel>TALK TO US</RollLabel>
@@ -198,14 +198,46 @@ const { render = true, overlap = false } = Astro.props;
     const backdrop = nav.querySelector<HTMLButtonElement>(".nav_backdrop")!;
     const buttons = [...nav.querySelectorAll<HTMLButtonElement>(".nav_label")];
     const mobile = window.matchMedia("(width < 64rem)");
+    const accordionAnimations = new Map<HTMLElement, Animation>();
+    const slideAccordion = (element: HTMLElement, open: boolean) => {
+      if (element.hidden && !open) return;
+      const height = element.getBoundingClientRect().height;
+      const marginTop = element.hidden ? "0px" : getComputedStyle(element).marginTop;
+      accordionAnimations.get(element)?.cancel();
+      accordionAnimations.delete(element);
+      element.inert = !open;
+      if (!mobile.matches || reducedMotion.matches) {
+        element.hidden = !open;
+        return;
+      }
+      element.hidden = false;
+      const targetHeight = open ? element.getBoundingClientRect().height : 0;
+      const targetMargin = open ? getComputedStyle(element).marginTop : "0px";
+      const animation = element.animate(
+        [
+          { height: `${height}px`, marginTop },
+          { height: `${targetHeight}px`, marginTop: targetMargin },
+        ],
+        {
+          duration: durationToken(nav, "--motion-reveal-duration", 550),
+          easing: getComputedStyle(nav).getPropertyValue("--motion-reveal-ease").trim() || "ease",
+        },
+      );
+      accordionAnimations.set(element, animation);
+      animation.onfinish = () => {
+        element.hidden = !open;
+        accordionAnimations.delete(element);
+      };
+    };
     const syncGroupButtons = () => {
       nav
         .querySelectorAll<HTMLButtonElement>(".nav_group-toggle")
         .forEach((button) => {
           button.disabled = !mobile.matches;
-          const expanded = document
-            .getElementById(button.getAttribute("aria-controls")!)!
-            .classList.contains("expanded");
+          const links = document.getElementById(button.getAttribute("aria-controls")!)!;
+          const expanded = links.classList.contains("expanded");
+          links.hidden = mobile.matches && !expanded;
+          links.inert = links.hidden;
           button.setAttribute(
             "aria-expanded",
             String(!mobile.matches || expanded),
@@ -232,8 +264,7 @@ const { render = true, overlap = false } = Astro.props;
         const panel = document.getElementById(
           button.getAttribute("aria-controls")!,
         )!;
-        panel.inert = true;
-        panel.hidden = true;
+        slideAccordion(panel, false);
       });
     };
     const closePanels = () => {
@@ -254,6 +285,19 @@ const { render = true, overlap = false } = Astro.props;
       } else if (!open && locked) {
         document.body.style.overflow = originalOverflow;
         locked = false;
+      }
+      if (open && mobile.matches) {
+        nav.querySelectorAll<HTMLButtonElement>(".nav_group-toggle").forEach((button, index) => {
+          const links = document.getElementById(button.getAttribute("aria-controls")!)!;
+          accordionAnimations.get(links)?.cancel();
+          accordionAnimations.delete(links);
+          const expanded = index === 0;
+          button.setAttribute("aria-expanded", String(expanded));
+          links.classList.toggle("expanded", expanded);
+          links.hidden = !expanded;
+          links.inert = !expanded;
+        });
+        if (buttons[0]?.getAttribute("aria-expanded") !== "true") buttons[0]?.click();
       }
       if (!open) closePanels();
     };
@@ -276,8 +320,7 @@ const { render = true, overlap = false } = Astro.props;
         const reveal = () => {
           pendingPanel = undefined;
           button.setAttribute("aria-expanded", "true");
-          panel.inert = false;
-          panel.hidden = false;
+          slideAccordion(panel, true);
           backdrop.hidden = mobile.matches;
         };
         if (switching && !mobile.matches && !reducedMotion.matches) {
@@ -308,10 +351,13 @@ const { render = true, overlap = false } = Astro.props;
       .forEach((button) => {
         button.addEventListener("click", () => {
           const open = button.getAttribute("aria-expanded") !== "true";
-          button.setAttribute("aria-expanded", String(open));
-          document
-            .getElementById(button.getAttribute("aria-controls")!)!
-            .classList.toggle("expanded", open);
+          nav.querySelectorAll<HTMLButtonElement>(".nav_group-toggle").forEach((other) => {
+            const expanded = other === button && open;
+            other.setAttribute("aria-expanded", String(expanded));
+            const links = document.getElementById(other.getAttribute("aria-controls")!)!;
+            links.classList.toggle("expanded", expanded);
+            slideAccordion(links, expanded);
+          });
         });
       });
     backdrop.addEventListener("click", closePanels);
@@ -347,7 +393,7 @@ const { render = true, overlap = false } = Astro.props;
             "a[href], button:not([disabled])",
           ),
         ].filter(
-          (element) => element.getClientRects().length && element.tabIndex >= 0,
+          (element) => element.getClientRects().length && element.tabIndex >= 0 && !element.closest("[inert]"),
         );
         const first = focusable[0],
           last = focusable.at(-1);
@@ -366,7 +412,11 @@ const { render = true, overlap = false } = Astro.props;
           setOpen(false);
       });
     });
-    mobile.addEventListener("change", () => setOpen(false));
+    mobile.addEventListener("change", () => {
+      accordionAnimations.forEach((animation) => animation.cancel());
+      accordionAnimations.clear();
+      setOpen(false);
+    });
     reducedMotion.addEventListener("change", () => setOpen(false));
     document.addEventListener("astro:before-swap", () => setOpen(false), {
       once: true,
@@ -883,6 +933,7 @@ const { render = true, overlap = false } = Astro.props;
           color: var(--dark-900);
           overflow-y: auto;
           overscroll-behavior: contain;
+          overflow-anchor: none;
           border: 0;
           transition:
             opacity var(--open-duration) var(--open-ease),
@@ -914,16 +965,14 @@ const { render = true, overlap = false } = Astro.props;
           position: static;
           translate: none;
           width: 100%;
-          padding: 1rem 0 0 0.5rem;
+          padding: 0;
           max-height: none;
-          overflow: visible;
+          overflow: hidden;
           border: 0;
-          transition:
-            opacity var(--open-duration) var(--open-ease),
-            display var(--open-duration) allow-discrete;
-          @starting-style {
-            opacity: 0;
-          }
+          transition: none;
+        }
+        .nav_panel-inner {
+          padding: 1rem 0 0 0.5rem;
         }
         .nav_panel-inner,
         .business .nav_groups {
@@ -938,7 +987,7 @@ const { render = true, overlap = false } = Astro.props;
           gap: var(--space-4);
         }
         .nav_group {
-
+          border-left: var(--_rule);
           padding-left: 0.75rem;
         }
         .nav_group + .nav_group {
@@ -974,9 +1023,10 @@ const { render = true, overlap = false } = Astro.props;
         .nav_group-links {
           font-size: 0.875rem;
           gap: var(--space-3);
+          overflow: hidden;
         }
-        .business .nav_group-links:not(.expanded) {
-          display: none;
+        .nav_group-links > li {
+          flex-shrink: 0;
         }
         .nav_mobile-promo {
           display: block;
