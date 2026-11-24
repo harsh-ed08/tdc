@@ -39,5 +39,10 @@ not an additional site brand color.
 Use `--hover-*` and `--motion-*` for shared CSS transitions. GSAP's timing values
 are in seconds; keep them coordinated with corresponding CSS motion tokens.
 Preserve reduced-motion fallbacks, keyboard access, and animation cleanup.
+The timeline uses native CSS sticky positioning with scroll-driven GSAP motion
+on touch and hybrid devices. Do not add document scroll locking or competing
+touch handlers to that mode. Use stable viewport units; short landscape layouts
+and reduced motion use the accessible native horizontal scroller. Mouse-only
+desktop layouts retain gesture capture. Keep both paths functional when editing.
 After changes run `npm run check` and `npm run build`, then inspect the homepage
 and style guide at desktop and mobile widths. Keep the demo's noindex controls.
