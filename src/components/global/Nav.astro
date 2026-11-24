@@ -432,8 +432,9 @@ const { render = true, overlap = false } = Astro.props;
       top: 0;
       z-index: 100;
       color: var(--light-300);
-      background:
-        linear-gradient(rgb(0 0 0 / 50%), rgb(0 0 0 / 50%)), var(--dark-900);
+      background: #3415009e;
+      -webkit-backdrop-filter: blur(8px);
+      backdrop-filter: blur(8px);
       border-bottom: var(--_rule);
       padding-inline: var(--layout-gutter);
       &.overlap {
@@ -850,7 +851,8 @@ const { render = true, overlap = false } = Astro.props;
       }
       .nav_backdrop {
         position: fixed;
-        inset: 4rem 0 0;
+        inset: 4rem 0 auto;
+        height: calc(100dvh - 4rem);
         z-index: 1;
         background: linear-gradient(
           to bottom,
@@ -926,7 +928,7 @@ const { render = true, overlap = false } = Astro.props;
           display: none;
           position: fixed;
           top: 3rem;
-          bottom: 0;
+          height: calc(100dvh - 3rem);
           inset-inline: 0;
           padding: 1.5rem 2rem;
           background: var(--light-300);
