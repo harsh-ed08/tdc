@@ -418,6 +418,8 @@ const { render = true, overlap = false } = Astro.props;
         transform: translateX(-50%);
       }
       .nav_inner {
+        /* Keep panels in the header's stacking context, above the backdrop. */
+        isolation: auto;
         display: grid;
         grid-template-columns: var(--layout-columns);
         max-width: var(--layout-max-width);
