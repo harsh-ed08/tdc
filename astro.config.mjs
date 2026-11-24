@@ -1,11 +1,14 @@
 // @ts-check
 import { defineConfig, fontProviders } from "astro/config";
 import sitemap from "@astrojs/sitemap";
-import { SITE_URL } from "./src/consts.ts";
+import { loadEnv } from "vite";
 import { isNoindexRoute } from "./src/utils/seo.ts";
 
+const env = loadEnv(process.env.NODE_ENV || "production", process.cwd(), "");
+const site = env.SITE_URL || env.CF_PAGES_URL || "http://localhost:4321";
+
 export default defineConfig({
-  site: SITE_URL,
+  site,
   integrations: [
     sitemap({
       filter: (page) => !isNoindexRoute(new URL(page).pathname),

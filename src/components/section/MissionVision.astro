@@ -1,0 +1,183 @@
+---
+import Tabs from "@/components/interactive/Tabs.astro";
+import TabLink from "@/components/interactive/TabLink.astro";
+import Heading from "@/components/typography/Heading.astro";
+import { Image } from "astro:assets";
+import missionArt from "@/assets/images/mission-art.jpg";
+import visionArt from "@/assets/images/vision-art.jpg";
+
+const panels = [
+  {
+    name: "Mission",
+    title: "Your situation is the variable. Precision is how we solve for it.",
+    image: missionArt,
+    paragraphs: [
+      "We bring the same precision to every capital decision that a decimal point brings to determining value.",
+      "Every value we determine is exact, down to the smallest detail that matters. That precision gives you certainty of capital that is structured and executed in a timely manner. That certainty is how we stay in control of the outcome.",
+    ],
+  },
+  {
+    name: "Vision",
+    title: "Mid-market where certainty is expected, not exceptional.",
+    image: visionArt,
+    paragraphs: [
+      "We envision a mid-market where certainty is no longer something businesses are fortunate to find, but something everyone can rightfully expect. Where every promise we keep compounds into reasons restoring faith in the mid-market and holding it to one common standard.",
+    ],
+  },
+];
+---
+
+<section class="beliefs_wrap theme-dark" aria-label="Our mission and vision">
+  <div class="beliefs_inner">
+    <div class="layout_rules" aria-hidden="true"><span /><span /><span /></div>
+    <Tabs variant="side" id="mission-vision" class="beliefs_tabs">
+      <Fragment slot="links">
+        {panels.map((panel) => <TabLink>{panel.name}</TabLink>)}
+      </Fragment>
+      {panels.map((panel) => (
+        <div class:list={["beliefs_panel", panel.name.toLowerCase()]}>
+          <Heading tag="h2" variant="inherit" class="beliefs_title">{panel.title}</Heading>
+          <div class="beliefs_visual">
+            <Image class="beliefs_image" src={panel.image} alt="" sizes="(max-width: 767px) 100vw, 51vw" />
+            <div class="beliefs_card">
+              <div>{panel.paragraphs.map((text) => <p>{text}</p>)}</div>
+              <img src="/purpose-icon.svg" alt="" width="8" height="12" />
+            </div>
+          </div>
+        </div>
+      ))}
+    </Tabs>
+  </div>
+</section>
+
+<style is:global>
+  @layer components {
+    .beliefs_wrap {
+      background: var(--background);
+      color: var(--text);
+      .beliefs_inner {
+        position: relative;
+        width: calc(100% - 2 * var(--layout-gutter));
+        max-width: var(--layout-max-width);
+        margin-inline: auto;
+        padding-block: clamp(3rem, 5.56vw, 5rem);
+      }
+      .beliefs_tabs.side {
+        position: relative;
+        grid-template-columns: minmax(0, 2fr) minmax(0, 8fr);
+        gap: 0;
+        align-items: start;
+        .tabs_bar { padding-top: 0.625rem; }
+        .tabs_links { gap: 0.5rem; }
+        .tabs_link {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0.5rem;
+          border: 0;
+          border-radius: 0;
+          background: transparent;
+          color: var(--neutral-500);
+          font-family: var(--label-family);
+          font-size: clamp(0.6875rem, 1.11vw, 1rem);
+          line-height: 1.25;
+          text-transform: uppercase;
+          &::before {
+            content: "";
+            flex: none;
+            width: 0.5em;
+            height: 0.75em;
+            background: currentColor;
+            mask: url("/purpose-icon.svg") center / contain no-repeat;
+          }
+          &.is-active, &:hover { color: var(--light-300); }
+        }
+        .tabs_panels { overflow: visible; }
+      }
+      .beliefs_title {
+        max-width: 45rem;
+        margin: 0;
+        padding-inline: 1rem;
+        font-family: var(--heading-family);
+        font-weight: var(--primary-light);
+        font-size: clamp(2rem, 3.333vw, 3rem);
+        line-height: 1;
+        letter-spacing: 0;
+        text-wrap: initial;
+        &::before, &::after { display: none; }
+      }
+      .beliefs_visual {
+        position: relative;
+        margin-top: clamp(3rem, 5.56vw, 5rem);
+        aspect-ratio: 1049 / 474;
+      }
+      .beliefs_image {
+        display: block;
+        width: 69.5%;
+        height: 100%;
+        margin-left: auto;
+        object-fit: cover;
+      }
+      .beliefs_card {
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        width: 37.5%;
+        min-height: 81.2%;
+        padding: clamp(1rem, 2.22vw, 2rem) 1rem;
+        background: var(--brand-500);
+        color: var(--dark-900);
+        font-family: var(--primary-family);
+        font-size: clamp(0.875rem, 1.11vw, 1rem);
+        font-weight: 300;
+        line-height: 1.3;
+        p { margin: 0; }
+        p + p { margin-top: 1.3em; }
+        > img {
+          flex: none;
+          width: 8px;
+          max-width: 8px;
+          height: auto;
+          margin-top: 2rem;
+        }
+      }
+      .vision {
+        .beliefs_image { margin-left: 0; }
+        .beliefs_card { left: auto; right: 0; }
+      }
+      @media (width < 64rem) {
+        .beliefs_tabs.side { grid-template-columns: minmax(0, 1fr) minmax(0, 3fr); }
+        .beliefs_visual { min-height: 25rem; }
+        .beliefs_card { width: 48%; }
+      }
+      @media (width < 48rem) {
+        .beliefs_tabs.side {
+          grid-template-columns: minmax(0, 1fr);
+          gap: 2rem;
+        }
+        .beliefs_title { padding-inline: 0.75rem; font-size: clamp(2rem, 6vw, 2.75rem); }
+        .beliefs_visual { aspect-ratio: auto; min-height: 0; margin-top: 2.5rem; }
+        .beliefs_image { width: 100%; height: 16rem; }
+        .beliefs_card, .vision .beliefs_card {
+          position: relative;
+          top: auto;
+          transform: none;
+          left: auto;
+          right: auto;
+          width: calc(100% - 1.5rem);
+          min-height: 18rem;
+          margin: -2rem auto 0;
+          padding: 1.5rem;
+          font-size: 1rem;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .tabs_panels > * { transition: none; }
+      }
+    }
+  }
+</style>

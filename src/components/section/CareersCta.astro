@@ -1,0 +1,115 @@
+---
+import { Image } from "astro:assets";
+import Heading from "@/components/typography/Heading.astro";
+import RollLabel from "@/components/typography/RollLabel.astro";
+import CtaArrow from "@/components/typography/CtaArrow.astro";
+import background from "@/assets/images/careers-cta.avif";
+
+interface Props {
+  /** Destination for the careers page, once available. */
+  href?: string;
+}
+const { href } = Astro.props;
+---
+
+<section class="careers-cta_wrap theme-light" aria-labelledby="careers-cta-title">
+  <div class="careers-cta_inner">
+    <div class="careers-cta_rules layout_rules" aria-hidden="true"><span /><span /><span /></div>
+    <div class="careers-cta_card">
+      <Image class="careers-cta_background" src={background} alt="" loading="lazy" sizes="100vw" />
+      <img class="careers-cta_mobile-art" src="/careers-cta-mobile.svg" width="311" height="243" alt="" loading="lazy" />
+      <Heading tag="h2" variant="inherit" id="careers-cta-title" class="careers-cta_title">Thrive beyond the convention.</Heading>
+      <a class="careers-cta_link" href={href} aria-disabled={!href || undefined}>
+        <RollLabel>EXPLORE CAREERS</RollLabel>
+        <CtaArrow />
+      </a>
+    </div>
+  </div>
+</section>
+
+<style is:global>
+  @layer components {
+    .careers-cta_wrap {
+      background: var(--background);
+      .careers-cta_inner {
+        position: relative;
+        width: calc(100% - 2 * var(--layout-gutter));
+        max-width: var(--layout-max-width);
+        margin-inline: auto;
+        padding-block: clamp(3rem, 6.25vw, 5.625rem);
+      }
+      .careers-cta_rules {
+        --layout-rule-color: color-mix(in srgb, var(--dark-900) 15%, transparent);
+      }
+      .careers-cta_card {
+        position: relative;
+        isolation: isolate;
+        display: grid;
+        grid-template-columns: var(--layout-columns);
+        align-items: center;
+        min-height: clamp(15rem, 22.3vw, 20rem);
+        overflow: clip;
+        background: #341500;
+        color: var(--brand-500);
+      }
+      .careers-cta_background {
+        position: absolute;
+        inset: 0 auto 0 0;
+        z-index: -1;
+        width: auto;
+        height: 100%;
+        object-fit: contain;
+      }
+      .careers-cta_mobile-art { display: none; }
+      .careers-cta_title {
+        grid-column: 2 / -1;
+        grid-row: 1;
+        margin: 0;
+        padding: 2rem 13rem 2rem 1rem;
+        font-family: var(--heading-family);
+        font-size: clamp(2rem, 3.89vw, 3.5rem);
+        font-weight: var(--primary-light);
+        line-height: 1.15;
+        letter-spacing: 0;
+        &::before, &::after { display: none; }
+      }
+      .careers-cta_link {
+        grid-column: 3;
+        grid-row: 1;
+        justify-self: end;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        min-height: 2.75rem;
+        margin-right: 2rem;
+        font: 400 0.875rem/1 var(--label-family);
+        &:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
+      }
+      @media (width < 64rem) and (width >= 48rem) {
+        .careers-cta_title { grid-column: 1 / -1; padding-left: 22%; font-size: 2rem; }
+        .careers-cta_link { grid-column: 2; margin-right: 1rem; }
+      }
+      @media (width < 48rem) {
+        .careers-cta_inner { padding-block: 1.75rem; }
+        .careers-cta_card {
+          margin-inline: 0.75rem;
+          min-height: 26.25rem;
+          grid-template-columns: minmax(0, 1fr);
+          align-content: end;
+          padding: 12rem 0.875rem 3rem;
+        }
+        .careers-cta_background { display: none; }
+        .careers-cta_mobile-art {
+          display: block;
+          position: absolute;
+          inset: 0 0 auto;
+          z-index: -1;
+          width: 100%;
+          height: auto;
+        }
+        .careers-cta_title { grid-column: 1; grid-row: auto; padding: 0; font-size: 1.5rem; }
+        .careers-cta_link { grid-column: 1; grid-row: auto; justify-self: start; margin: 1.5rem 0 0; }
+      }
+    }
+  }
+</style>

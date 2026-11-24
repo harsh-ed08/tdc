@@ -2,6 +2,11 @@
 import Layout from "@/layouts/BaseLayout.astro";
 import Heading from "@/components/typography/Heading.astro";
 import Img from "@/components/media/Img.astro";
+import Purpose from "@/components/section/Purpose.astro";
+import MissionVision from "@/components/section/MissionVision.astro";
+import Leadership from "@/components/section/Leadership.astro";
+import MainCta from "@/components/section/MainCta.astro";
+import CareersCta from "@/components/section/CareersCta.astro";
 import heroImage from "@/assets/images/about-hero-img.jpg";
 ---
 <Layout theme="dark" overlap>
@@ -16,6 +21,11 @@ import heroImage from "@/assets/images/about-hero-img.jpg";
       </Heading>
     </div>
   </section>
+  <Purpose />
+  <MissionVision />
+  <Leadership />
+  <CareersCta />
+  <MainCta />
 </Layout>
 <style is:global>
   @layer components {

@@ -1,6 +1,6 @@
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
-  "name": "lumos-for-astro",
+  "name": "decimal-capital",
   "compatibility_date": "2026-08-13",
 
   // The built site. There is no `main`, so this deploys as an assets-only
@@ -10,14 +10,8 @@
     "not_found_handling": "404-page",
   },
 
-  // The domain the Worker answers on. `custom_domain` makes Cloudflare create
-  // and manage the DNS record for it, so the zone needs to be in this account.
-  "routes": [
-    {
-      "pattern": "preview.lumosframework.com",
-      "custom_domain": true,
-    },
-  ],
+  // Add your custom domain in Cloudflare after the first deployment.
+  "workers_dev": true,
 
   "observability": {
     "enabled": true,

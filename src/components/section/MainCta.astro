@@ -1,0 +1,119 @@
+---
+import { Image } from "astro:assets";
+import Heading from "@/components/typography/Heading.astro";
+import RollLabel from "@/components/typography/RollLabel.astro";
+import CtaArrow from "@/components/typography/CtaArrow.astro";
+import { contactHref } from "@/data/navigation";
+import background from "@/assets/images/main-cta-desktop.avif";
+---
+
+<section class="main-cta_wrap" aria-labelledby="main-cta-title">
+  <Image class="main-cta_image" src={background} alt="" widths={[750, 1440, 1920, 2880]} sizes="(max-width: 767px) 950px, 100vw" loading="lazy" />
+  <img class="main-cta_overlay" src="/cta-overlay.svg" alt="" width="547" height="860" loading="lazy" />
+  <div class="main-cta_inner">
+    <div class="main-cta_rules layout_rules" aria-hidden="true"><span /><span /><span /></div>
+    <div class="main-cta_content">
+      <Heading tag="h2" variant="inherit" id="main-cta-title" class="main-cta_title">Certain to the dot.</Heading>
+      <p class="main-cta_description">Every time, on every deal, down to the last decimal.</p>
+      <a class="main-cta_link" href={contactHref}>
+        <RollLabel>CONTACT</RollLabel>
+        <CtaArrow />
+      </a>
+    </div>
+  </div>
+</section>
+
+<style is:global>
+  @layer components {
+    .main-cta_wrap {
+      position: relative;
+      isolation: isolate;
+      display: flex;
+      height: 100svh;
+      overflow: clip;
+      background: var(--dark-900);
+      color: var(--light-300);
+      .main-cta_image {
+        position: absolute;
+        inset: 0;
+        z-index: -2;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .main-cta_overlay {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        z-index: -1;
+        width: auto;
+        height: 100%;
+        mix-blend-mode: overlay;
+        pointer-events: none;
+      }
+      .main-cta_inner {
+        position: relative;
+        display: grid;
+        grid-template-columns: var(--layout-columns);
+        align-items: end;
+        width: calc(100% - 2 * var(--layout-gutter));
+        max-width: var(--layout-max-width);
+        margin-inline: auto;
+        padding-block: 5rem;
+      }
+      .main-cta_rules {
+        --layout-rule-color: color-mix(in srgb, var(--light-300) 25%, transparent);
+      }
+      .main-cta_content {
+        grid-column: 2 / -1;
+        padding-inline: 1rem;
+      }
+      .main-cta_title {
+        margin: 0;
+        font-family: var(--heading-family);
+        font-size: clamp(2rem, 3.333vw, 3rem);
+        font-weight: var(--primary-light);
+        line-height: 1.15;
+        letter-spacing: 0;
+        &::before, &::after { display: none; }
+      }
+      .main-cta_description {
+        max-width: 20rem;
+        margin: 1rem 0 1.5rem;
+        font-family: var(--primary-family);
+        font-size: 1.125rem;
+        font-weight: var(--primary-light);
+        line-height: 1.35;
+      }
+      .main-cta_link {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        width: fit-content;
+        min-height: 2.75rem;
+        font: 400 1rem/1 var(--label-family);
+        &:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
+      }
+      @media (width < 64rem) {
+        .main-cta_content { grid-column: 1 / -1; }
+      }
+      @media (width < 48rem) {
+        height: auto;
+        aspect-ratio: 393 / 593;
+        .main-cta_image { object-position: 72% center; }
+        .main-cta_overlay { left: 0; width: 100%; object-fit: fill; }
+        .main-cta_inner { padding-block: 4.25rem; }
+        .main-cta_rules { display: none; }
+        .main-cta_content { padding-inline: 0.75rem; }
+        .main-cta_title { font-size: 1.375rem; line-height: 1.3; }
+        .main-cta_description {
+          max-width: 18rem;
+          font-size: 1rem;
+          font-weight: var(--primary-medium);
+          margin-block: 1rem 1.25rem;
+        }
+        .main-cta_link { font-size: 0.875rem; }
+      }
+    }
+  }
+</style>

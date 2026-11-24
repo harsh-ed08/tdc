@@ -34,3 +34,4 @@ pnpm-debug.log*
 
 # Local inspection tools and generated reference frames
 .tmp/
+.wrangler/
