@@ -31,14 +31,14 @@ const initial = selectInsights(articles);
           <input type="search" name="search" placeholder="Search" autocomplete="off" data-search />
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="6" stroke="currentColor" stroke-width="1.5"/><path d="m15 15 6 6" stroke="currentColor" stroke-width="1.5"/></svg>
         </label>
-        <details class="insights_categories">
+        <details class="insights_categories" open>
           <summary>By type <span aria-hidden="true"></span></summary>
           <fieldset>
             <legend class="insights_sr">Types</legend>
             {postTypes.map((postType) => <label><input type="checkbox" name="postType" value={postType} /> {postType}</label>)}
           </fieldset>
         </details>
-        <details class="insights_categories" open>
+        <details class="insights_categories">
           <summary>By business <span aria-hidden="true"></span></summary>
           <fieldset>
             <legend class="insights_sr">Businesses</legend>
