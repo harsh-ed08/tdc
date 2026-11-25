@@ -1,27 +1,15 @@
 ---
+import HeroAbout from "@/components/section/HeroAbout.astro";
 import Layout from "@/layouts/BaseLayout.astro";
-import Heading from "@/components/typography/Heading.astro";
-import Img from "@/components/media/Img.astro";
 import Purpose from "@/components/section/Purpose.astro";
 import MissionVision from "@/components/section/MissionVision.astro";
 import Leadership from "@/components/section/Leadership.astro";
 import StoryTimeline from "@/components/section/StoryTimeline.astro";
 import MainCta from "@/components/section/MainCta.astro";
 import CareersCta from "@/components/section/CareersCta.astro";
-import heroImage from "@/assets/images/about-hero-img.jpg";
 ---
 <Layout theme="dark" overlap>
-  <section class="home-hero_wrap" aria-labelledby="home-hero-title">
-    <Img class="home-hero_image" src={heroImage} variant="constrained" sizes="(max-width: 767px) 1600px, (max-width: 1023px) 1200px, 100vw" width={1440} height={810} loading="eager" fetchPriority="high" />
-    <div class="home-hero_inner layout_frame">
-      <div class="home-hero_rules layout_rules" aria-hidden="true"><span /><span /><span /></div>
-      <Heading tag="h1" variant="inherit" id="home-hero-title" class="home-hero_title">
-        <span>We exist so that no promising</span>{" "}
-        <span>business is left at the mercy of</span>{" "}
-        <span>uncertainty.</span>
-      </Heading>
-    </div>
-  </section>
+  <HeroAbout />
   <Purpose />
   <MissionVision />
   <StoryTimeline />
@@ -29,67 +17,3 @@ import heroImage from "@/assets/images/about-hero-img.jpg";
   <CareersCta />
   <MainCta />
 </Layout>
-<style is:global>
-  @layer components {
-    /* Align hero rules with the shared header and footer grid. */
-    .home-hero_wrap {
-      position: relative;
-      isolation: isolate;
-      display: flex;
-      height: 100svh;
-      background: var(--dark-900);
-      color: var(--light-300);
-      .home-hero_image {
-        position: absolute;
-        inset: 0;
-        z-index: -1;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        object-position: center;
-      }
-      .home-hero_inner {
-        position: relative;
-        display: grid;
-        grid-template-columns: var(--layout-columns);
-        align-items: end;
-
-        padding-block: 8rem 5rem;
-      }
-      .home-hero_rules {
-        --layout-rule-color: color-mix(in srgb, var(--dark-900) 30%, transparent);
-      }
-      .home-hero_title {
-        grid-column: 2 / -1;
-        margin: 0;
-        padding-inline: var(--space-3);
-        font-family: var(--heading-family);
-        font-size: clamp(2rem, 3.889vw, 3.5rem);
-        font-weight: var(--primary-light);
-        line-height: 1;
-        letter-spacing: var(--letter-spacing-normal);
-        text-wrap: initial;
-        &::before,
-        &::after { display: none; }
-        span { display: block; }
-      }
-      @media (width < 64rem) {
-
-        .home-hero_inner { padding-bottom: 4rem; }
-        .home-hero_title { grid-column: 1 / -1; font-size: clamp(2rem, 4vw, 3rem); }
-        .home-hero_title span { display: inline; }
-      }
-      @media (width < 48rem) {
-
-        .home-hero_inner { padding-block: 6rem 3rem; }
-        .home-hero_title {
-          grid-column: 1 / -1;
-          padding-inline: var(--space-2);
-          font-size: clamp(2rem, 6vw, 2.75rem);
-          line-height: 1.1;
-        }
-        .home-hero_image { object-position: 58% center; }
-      }
-    }
-  }
-</style>

@@ -28,7 +28,7 @@ const columns = [footerPages, footerIndustries, footerPartners];
             <span />
           </>
         </div>
-        <div class="footer_main">
+        <div class="footer_main layout_columns position-relative align-items-stretch">
           <a class="footer_logo" href="/" aria-label={`${SITE_NAME} home`}>
             <img
               class="footer_brand"
@@ -46,16 +46,16 @@ const columns = [footerPages, footerIndustries, footerPartners];
               }
             >
               {groups.map((group) => (
-                <div class="footer_group">
+                <div class="footer_group flex-vertical-nowrap align-items-stretch justify-content-start">
                   <Heading
                     tag="h2"
                     variant="inherit"
-                    class:list={["footer_label", group.action && "action"]}
+                    class:list={["footer_label text-style-label", group.action && "action"]}
                   >
                     {group.action ? (
                       <Fragment>
                         {group.href ? (
-                          <a class="footer_link" href={group.href}>
+                          <a class="footer_link flex-horizontal-nowrap" href={group.href}>
                             <span class="footer_link-text">{group.label}</span>
                             <img
                               class="footer_arrow"
@@ -66,7 +66,7 @@ const columns = [footerPages, footerIndustries, footerPartners];
                             />
                           </a>
                         ) : (
-                          <span class="footer_link" aria-disabled="true">
+                          <span class="footer_link flex-horizontal-nowrap" aria-disabled="true">
                             <span class="footer_link-text">{group.label}</span>
                             <img
                               class="footer_arrow"
@@ -83,11 +83,11 @@ const columns = [footerPages, footerIndustries, footerPartners];
                     )}
                   </Heading>
                   {group.items && (
-                    <ul class="footer_links">
+                    <ul class="footer_links flex-vertical-nowrap align-items-stretch justify-content-start padding-0">
                       {group.items.map((item) => (
                         <li>
                           {item.href ? (
-                            <a class="footer_link" href={item.href}>
+                            <a class="footer_link flex-horizontal-nowrap" href={item.href}>
                               <span class="footer_link-text">{item.label}</span>
                               <img
                                 class="footer_arrow"
@@ -98,7 +98,7 @@ const columns = [footerPages, footerIndustries, footerPartners];
                               />
                             </a>
                           ) : (
-                            <span class="footer_link" aria-disabled="true">
+                            <span class="footer_link flex-horizontal-nowrap" aria-disabled="true">
                               <span class="footer_link-text">{item.label}</span>
                               <img
                                 class="footer_arrow"
@@ -118,15 +118,15 @@ const columns = [footerPages, footerIndustries, footerPartners];
             </nav>
           ))}
         </div>
-        <div class="footer_bottom">
+        <div class="footer_bottom layout_columns position-relative">
           <div class="footer_inquiries">
-            <Heading tag="h2" variant="inherit" class="footer_label">
+            <Heading tag="h2" variant="inherit" class="footer_label text-style-label">
               For general inquiries
             </Heading>
-            <address class="footer_address">
+            <address class="footer_address flex-vertical-nowrap align-items-stretch justify-content-start gap-1">
               <>
                 <a
-                  class="footer_link"
+                  class="footer_link flex-horizontal-nowrap"
                   href="mailto:contact@thedecimalcapital.com"
                 >
                   <span class="footer_link-text">contact@thedecimalcapital.com</span>
@@ -138,7 +138,7 @@ const columns = [footerPages, footerIndustries, footerPartners];
                     alt=""
                   />
                 </a>
-                <a class="footer_link" href="tel:+919560011852">
+                <a class="footer_link flex-horizontal-nowrap" href="tel:+919560011852">
                   <span class="footer_link-text">+91 9560011852</span>
                   <img
                     class="footer_arrow"
@@ -152,10 +152,10 @@ const columns = [footerPages, footerIndustries, footerPartners];
             </address>
           </div>
           <div class="footer_credits">
-            <Paragraph class="footer_label">
+            <Paragraph class="footer_label text-style-label">
               © {new Date().getFullYear()} COPYRIGHT. ALL RIGHTS RESERVED.
             </Paragraph>
-            <ul class="footer_socials" aria-label="Social media">
+            <ul class="footer_socials flex-horizontal-nowrap padding-0" aria-label="Social media">
               {footerSocials.map((social) => (
                 <li>
                   {social.href ? (
@@ -180,8 +180,8 @@ const columns = [footerPages, footerIndustries, footerPartners];
                 </li>
               ))}
             </ul>
-            <Paragraph class="footer_label">
-              <a class="footer_link" href="#">
+            <Paragraph class="footer_label text-style-label">
+              <a class="footer_link flex-horizontal-nowrap" href="#">
                 <span class="footer_link-text">Everything Design | Brand Design Partner</span>
               </a>
             </Paragraph>
@@ -209,12 +209,6 @@ const columns = [footerPages, footerIndustries, footerPartners];
       }
       .footer_rules {
         inset-block: calc(-1 * var(--_padding));
-      }
-      .footer_main {
-        position: relative;
-        display: grid;
-        grid-template-columns: var(--layout-columns);
-        align-items: stretch;
       }
       .footer_logo {
         grid-column: 1;
@@ -252,15 +246,10 @@ const columns = [footerPages, footerIndustries, footerPartners];
         border-left: var(--_rule);
       }
       .footer_group {
-        display: flex;
-        flex-direction: column;
         gap: var(--space-4);
       }
       .footer_label {
         margin-block: 0;
-        font: var(--primary-regular) var(--label-size-main)/1 var(--label-family);
-        text-transform: uppercase;
-        letter-spacing: var(--letter-spacing-normal);
         color: var(--neutral-500);
         text-wrap: initial;
       }
@@ -270,16 +259,11 @@ const columns = [footerPages, footerIndustries, footerPartners];
         line-height: normal;
       }
       .footer_links {
-        display: flex;
-        flex-direction: column;
         gap: var(--space-3);
         list-style: none;
-        padding: 0;
         font: var(--primary-light) 1rem/normal var(--heading-family);
       }
       .footer_link {
-        display: inline-flex;
-        align-items: center;
         gap: var(--space-1);
         max-width: 100%;
       }
@@ -293,9 +277,6 @@ const columns = [footerPages, footerIndustries, footerPartners];
         flex: none;
       }
       .footer_bottom {
-        position: relative;
-        display: grid;
-        grid-template-columns: var(--layout-columns);
         margin-top: var(--section-space-small);
       }
       .footer_inquiries {
@@ -314,18 +295,12 @@ const columns = [footerPages, footerIndustries, footerPartners];
         grid-column: 3;
       }
       .footer_address {
-        display: flex;
-        flex-direction: column;
-        gap: var(--space-1);
         font: var(--primary-light) 1.125rem/normal var(--primary-family);
         overflow-wrap: anywhere;
       }
       .footer_socials {
-        display: flex;
-        align-items: center;
-        gap: var(--space-4);
-        padding: 0;
         list-style: none;
+        gap: var(--space-4);
       }
       .footer_socials img {
         width: 1.5rem;

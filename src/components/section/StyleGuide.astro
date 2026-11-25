@@ -1,4 +1,5 @@
 ---
+import Grid from "@/components/wrapper/Grid.astro";
 import type { HTMLAttributes } from "astro/types";
 import Section from "@/components/wrapper/Section.astro";
 import Heading from "@/components/typography/Heading.astro";
@@ -24,7 +25,7 @@ const siteSwatches = ['light-300', 'dark-900', 'brand-500', 'neutral-500', 'whit
   </Section>
 
   <Section id="typography" containerClass="style-guide_layout typography">
-    <div class="style-guide_description">
+    <div class="style-guide_description flex-vertical-nowrap align-items-stretch justify-content-start gap-6">
       <Heading class="style-guide_section-title">Typography</Heading>
       <Paragraph>Open the “Tokens Studio for Figma” Plugin to view all typography details, including line heights, font families, font weights, and more.</Paragraph>
     </div>
@@ -35,41 +36,41 @@ const siteSwatches = ['light-300', 'dark-900', 'brand-500', 'neutral-500', 'whit
       </div>)}
       {bodyStyles.map((variant, index) => <div class="style-guide_row">
         <div><span class="style-guide_badge">Body - B{index + 1}</span></div>
-        <div class="style-guide_pair"><Paragraph variant={variant} class="style-guide_light">{copy}</Paragraph><Paragraph variant={variant}>{copy}</Paragraph></div>
+        <div class="style-guide_pair flex-vertical-nowrap align-items-stretch justify-content-start gap-3"><Paragraph variant={variant} class="style-guide_light">{copy}</Paragraph><Paragraph variant={variant}>{copy}</Paragraph></div>
       </div>)}
       {[1, 2].map(size => <div class="style-guide_row">
         <div><span class="style-guide_badge">TAGS T{size}</span></div>
-        <div class:list={['style-guide_pair', 'style-guide_mono', size === 2 && 'small']}><Paragraph>Lorem ipsum dolor sit amet.</Paragraph><Paragraph class="style-guide_medium">Lorem ipsum dolor sit amet.</Paragraph></div>
+        <div class:list={["style-guide_pair flex-vertical-nowrap align-items-stretch justify-content-start gap-3", "style-guide_mono text-style-label", size === 2 && 'small']}><Paragraph>Lorem ipsum dolor sit amet.</Paragraph><Paragraph class="style-guide_medium">Lorem ipsum dolor sit amet.</Paragraph></div>
       </div>)}
       {[1, 2].map(size => <div class="style-guide_row">
         <div><span class="style-guide_badge">CTA{size}</span></div>
-        <Paragraph class:list={['style-guide_mono', 'style-guide_medium', size === 2 && 'small']}>JOIN US</Paragraph>
+        <Paragraph class:list={["style-guide_mono text-style-label", 'style-guide_medium', size === 2 && 'small']}>JOIN US</Paragraph>
       </div>)}
     </div>
   </Section>
 
   <Section id="colors" paddingTop="small" paddingBottom="small" containerClass="style-guide_layout">
-    <div class="style-guide_description">
+    <div class="style-guide_description flex-vertical-nowrap align-items-stretch justify-content-start gap-6">
       <Heading class="style-guide_section-title">Colors</Heading>
       <Paragraph>Check the Figma Variables Panel for all color theme values.</Paragraph>
     </div>
-    <div class="style-guide_cards">
-      {['dark', 'light'].map(theme => <div class:list={['style-guide_card', `theme-${theme}`]}>
-        <div class="style-guide_card-copy">
+    <Grid small={2} class="style-guide_cards">
+      {['dark', 'light'].map(theme => <div class:list={["style-guide_card flex-vertical-nowrap justify-content-start padding-5 gap-7", `theme-${theme}`]}>
+        <div class="style-guide_card-copy flex-vertical-nowrap align-items-stretch justify-content-start gap-3">
           <Heading variant="h2" tag="h3" class="style-guide_card-title">Heading</Heading>
           <Paragraph class="style-guide_light">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique. Duis cursus, mi quis viverra ornare</Paragraph>
         </div>
         <Button variant="link" element="link" href="#typography" class="style-guide_cta">TALK TO US<img src="/style-guide-arrow.svg" width="16" height="24.253" alt="" /></Button>
       </div>)}
-    </div>
+    </Grid>
   </Section>
 
   <Section id="global-styles" class="style-guide_global" paddingTop="small" paddingBottom="small" containerClass="style-guide_layout">
-    <div class="style-guide_description">
+    <div class="style-guide_description flex-vertical-nowrap align-items-stretch justify-content-start gap-6">
       <Heading class="style-guide_section-title">Global Styles</Heading>
       <Paragraph>Check the Figma Variables Panel for all global styles.</Paragraph>
     </div>
-    <div class="style-guide_spacing">
+    <div class="style-guide_spacing flex-vertical-nowrap align-items-stretch justify-content-start gap-8">
       <div class="style-guide_bar small">Section Space Small</div>
       <div class="style-guide_bar main">Section Space Main</div>
       <div class="style-guide_bar large">Section Space Large</div>
@@ -78,21 +79,21 @@ const siteSwatches = ['light-300', 'dark-900', 'brand-500', 'neutral-500', 'whit
     </div>
   </Section>
   <Section id="site-patterns" containerClass="style-guide_layout">
-    <div class="style-guide_description">
+    <div class="style-guide_description flex-vertical-nowrap align-items-stretch justify-content-start gap-6">
       <Heading class="style-guide_section-title">Site patterns</Heading>
       <Paragraph>The homepage uses the same Lumos tokens, with a shared editorial grid and documented motion settings.</Paragraph>
     </div>
     <div class="style-guide_site-patterns">
       <Heading tag="h3" variant="h5">Site palette</Heading>
-      <div class="style-guide_swatches">
+      <Grid xsmall={2} class="style-guide_swatches">
         {siteSwatches.map(token => <div><span class="style-guide_swatch" style={`background: var(--${token})`} /><code>--{token}</code></div>)}
-      </div>
+      </Grid>
       <Heading tag="h3" variant="h5">Layout and spacing</Heading>
-      <Paragraph><code>layout_frame</code> and <code>layout_rules</code> share <code>--layout-gutter</code>, <code>--layout-max-width</code>, and <code>--layout-columns</code>. Standard spacing uses <code>--space-1</code> through <code>--space-8</code>.</Paragraph>
-      <div class="style-guide_grid-sample layout_frame"><div class="layout_rules" aria-hidden="true"><span /><span /><span /></div><span>Shared responsive grid</span></div>
+      <Paragraph><code>layout_frame</code>, <code>layout_columns</code>, and <code>layout_rules</code> share <code>--layout-gutter</code>, <code>--layout-max-width</code>, and <code>--layout-columns</code>. Standard spacing uses <code>padding-*</code>, <code>margin-*</code>, and <code>gap-*</code> utilities. Equal-column layouts use <code>Grid</code>; aligned rows and stacks use the shared flex patterns.</Paragraph>
+      <div class="style-guide_grid-sample layout_frame padding-block-8 alignment-center"><div class="layout_rules" aria-hidden="true"><span /><span /><span /></div><span>Shared responsive grid</span></div>
       <Heading tag="h3" variant="h5">Labels and motion</Heading>
-      <p class="style-guide_mono">Main label · --label-size-main</p>
-      <p class="style-guide_mono small">Small label · --label-size-small</p>
+      <p class="style-guide_mono text-style-label">Main label · --label-size-main</p>
+      <p class="style-guide_mono small text-style-label">Small label · --label-size-small</p>
       <Paragraph>Hover effects use <code>--hover-duration</code> and <code>--hover-ease</code>. Reveals, closing panels, and timeline art use the <code>--motion-*</code> tokens. The timeline year gap stays at 40px through <code>--timeline-year-gap</code>.</Paragraph>
     </div>
   </Section>
@@ -102,10 +103,10 @@ const siteSwatches = ['light-300', 'dark-900', 'brand-500', 'neutral-500', 'whit
   @layer components {
     .style-guide_wrap {
       .style-guide_site-patterns { display: grid; gap: var(--space-5); min-width: 0; }
-      .style-guide_swatches { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); }
+      .style-guide_swatches { --_gap-size: var(--space-3); }
       .style-guide_swatches code { overflow-wrap: anywhere; }
       .style-guide_swatch { display: block; height: var(--space-8); border: var(--border-thin) solid var(--border); margin-bottom: var(--space-2); }
-      .style-guide_grid-sample { padding-block: var(--space-8); text-align: center; background: var(--light-300); color: var(--dark-900); }
+      .style-guide_grid-sample { background: var(--light-300); color: var(--dark-900); }
       background: var(--light-100);
       color: var(--dark-800);
       .style-guide_hero { background: var(--brand-400); }
@@ -117,27 +118,24 @@ const siteSwatches = ['light-300', 'dark-900', 'brand-500', 'neutral-500', 'whit
       .style-guide_caption .style-guide_badge { background: var(--light-100); }
       .style-guide_layout { display: grid; grid-template-columns: minmax(0, 324fr) minmax(0, 1004fr); gap: var(--space-3); align-items: start; }
       .style-guide_layout.typography { grid-template-columns: minmax(0, 551fr) minmax(0, 777fr); }
-      .style-guide_description { display: flex; flex-direction: column; gap: var(--space-6); font: 1rem/1.5 var(--guide-family); }
+      .style-guide_description { font: 1rem/1.5 var(--guide-family); }
       .style-guide_description > .text { max-width: 34ch; }
       .style-guide_section-title { font-family: var(--guide-family); font-size: clamp(2.5rem, 5.56vw, 5rem); font-weight: var(--primary-regular); line-height: 1; letter-spacing: -0.03em; text-box-trim: trim-both; text-box-edge: cap alphabetic; }
       .style-guide_samples { min-width: 0; }
       .style-guide_row { display: grid; grid-template-columns: minmax(0, 211fr) minmax(0, 550fr); gap: var(--space-3); align-items: center; padding-block: var(--space-5); border-top: var(--border-width) solid var(--dark-700); }
       .style-guide_specimen { text-wrap: initial; }
-      .style-guide_pair { display: flex; flex-direction: column; gap: var(--space-3); min-width: 0; }
+      .style-guide_pair { min-width: 0; }
       .style-guide_light { font-weight: var(--primary-light); }
       .style-guide_medium { font-weight: var(--primary-medium); }
-      .style-guide_mono { font-family: var(--label-family); font-size: var(--label-size-main); line-height: 1; text-transform: uppercase; }
       .style-guide_mono.small { font-size: var(--label-size-small); }
-      .style-guide_cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); }
-      .style-guide_card { padding: var(--space-5); display: flex; flex-direction: column; align-items: start; gap: var(--space-7); }
-      .style-guide_card-copy { display: flex; flex-direction: column; gap: var(--space-3); }
+      .style-guide_cards { --_gap-size: var(--space-3); }
       .style-guide_card.theme-dark { --text: var(--light-300); }
       .style-guide_card.theme-light .style-guide_card-title { color: var(--brand-500); }
       .style-guide_cta { font-family: var(--label-family); font-size: 1rem; font-weight: var(--primary-medium); border: 0; padding: 0; }
       .style-guide_cta .button_text { display: flex; align-items: center; gap: var(--space-1); }
       .style-guide_cta img { width: 1rem; height: 1.5158125rem; object-fit: contain; }
       .style-guide_global { background: var(--dark-800); color: var(--light-100); }
-      .style-guide_spacing { display: flex; flex-direction: column; gap: var(--space-8); font: 1rem/1.5 var(--guide-family); }
+      .style-guide_spacing { font: 1rem/1.5 var(--guide-family); }
       .style-guide_bar { display: grid; place-items: center; border-radius: var(--radius-small); background: var(--light-200); color: var(--dark-800); text-box-trim: trim-both; text-box-edge: cap alphabetic; }
       .style-guide_bar.small { min-height: var(--space-3); }
       .style-guide_bar.main { min-height: var(--space-4); }
@@ -151,7 +149,6 @@ const siteSwatches = ['light-300', 'dark-900', 'brand-500', 'neutral-500', 'whit
         .style-guide_description > .text { max-width: 48ch; }
       }
       @media (width < 30rem) {
-        .style-guide_cards { grid-template-columns: 1fr; }
         .style-guide_row { grid-template-columns: 1fr; gap: var(--space-5); }
         .style-guide_caption { flex-wrap: wrap; justify-content: center; }
       }

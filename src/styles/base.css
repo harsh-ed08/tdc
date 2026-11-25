@@ -668,7 +668,7 @@ h6,
 }
 
 /* Leading trim */
-:is(h1, h2, h3, h4, h5, h6, p, [class*="text-style-"]:not(:has(h1, h2, h3, h4, h5, h6, p))) {
+:is(h1, h2, h3, h4, h5, h6, p, [class*="text-style-"]:not(.text-style-label):not(:has(h1, h2, h3, h4, h5, h6, p))) {
   display: flow-root;
   &::before {
     content: "";
@@ -696,4 +696,13 @@ h6,
 }
 @media (width < 48rem) {
   :root { --layout-columns: minmax(0, 1fr); }
+}
+
+.text-style-label {
+  font-family: var(--label-family);
+  font-size: var(--label-size-main);
+  font-weight: var(--primary-regular);
+  line-height: var(--line-height-small);
+  letter-spacing: var(--letter-spacing-normal);
+  text-transform: uppercase;
 }

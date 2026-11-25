@@ -1,0 +1,33 @@
+---
+import type { HTMLAttributes } from "astro/types";
+import Heading from "@/components/typography/Heading.astro";
+import Paragraph from "@/components/typography/Paragraph.astro";
+import { insightDate, type Insight } from "@/utils/insights";
+
+type Props = HTMLAttributes<"article"> & {
+  /** Set to `false` to omit the component. */
+  render?: boolean;
+  /** Article content. */
+  article: Insight;
+};
+const { render = true, article, class: className, ...rest } = Astro.props;
+---
+{render && article && (
+  <article class:list={["insight-article_wrap margin-inline-auto padding-block-8 padding-inline-4", className]} {...rest}>
+    <a class="text-style-label" href="/insights/">All insights</a>
+    <Paragraph variant="small">{article.category} {article.publishedAt && <> · <time datetime={article.publishedAt}>{insightDate(article.publishedAt)}</time></>}</Paragraph>
+    <Heading tag="h1" variant="h2">{article.title}</Heading>
+    {article.author && <Paragraph variant="small">By {article.author}</Paragraph>}
+    {article.image && <img class="width-full height-auto" src={`${article.image}?auto=format&w=1400&q=85`} alt={article.imageAlt ?? ""} width="1400" height="933" />}
+    {article.description && <Paragraph variant="large">{article.description}</Paragraph>}
+    {article.body?.split("\n\n").map((paragraph) => <Paragraph variant="main">{paragraph}</Paragraph>)}
+  </article>
+)}
+<style is:global>
+  @layer components {
+    .insight-article_wrap {
+      max-width: 52rem;
+      > * + * { margin-top: var(--space-4); }
+    }
+  }
+</style>

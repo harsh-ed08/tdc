@@ -17,9 +17,9 @@ const { render = true, overlap = false } = Astro.props;
 {
   render && (
     <header class:list={["nav_wrap", overlap && "overlap"]}>
-      <div class="nav_inner">
+      <div class="nav_inner layout_columns">
         <div class="nav_rules layout_rules" aria-hidden="true"><span /><span /><span /></div>
-        <a class="nav_logo" href="/" aria-label={`${SITE_NAME} home`}>
+        <a class="nav_logo flex-horizontal-nowrap align-self-stretch" href="/" aria-label={`${SITE_NAME} home`}>
           <img
             class="nav_brand"
             src="/header/logo.svg"
@@ -28,12 +28,12 @@ const { render = true, overlap = false } = Astro.props;
             alt=""
           />
         </a>
-        <nav class="nav_menu" id="nav-menu" aria-label="Main">
-          <ul class="nav_links">
+        <nav class="nav_menu flex-horizontal-nowrap" id="nav-menu" aria-label="Main">
+          <ul class="nav_links flex-horizontal-nowrap padding-0 margin-block-0">
             {navigation.map((item, index) => (
               <li class="nav_item">
                 <button
-                  class="nav_label"
+                  class="nav_label flex-horizontal-nowrap gap-1"
                   type="button"
                   aria-expanded="false"
                   aria-controls={`nav-panel-${index}`}
@@ -52,8 +52,8 @@ const { render = true, overlap = false } = Astro.props;
                   id={`nav-panel-${index}`}
                   hidden
                 >
-                  <div class="nav_panel-inner">
-                    <a class="nav_panel-title" href="#">
+                  <div class="nav_panel-inner layout_columns margin-inline-auto">
+                    <a class="nav_panel-title flex-horizontal-nowrap gap-1" href="#">
                       {item.label}
                       <img
                         src="/navigation/active-chevron.svg"
@@ -154,7 +154,7 @@ const { render = true, overlap = false } = Astro.props;
             ))}
           </ul>
         </nav>
-        <a class="nav_contact" href={contactHref}>
+        <a class="nav_contact flex-horizontal-nowrap gap-1 text-style-label" href={contactHref}>
           <RollLabel>TALK TO US</RollLabel>
           <CtaArrow />
         </a>
@@ -471,17 +471,12 @@ const { render = true, overlap = false } = Astro.props;
       .nav_inner {
         /* Keep panels in the header's stacking context, above the backdrop. */
         isolation: auto;
-        display: grid;
-        grid-template-columns: var(--layout-columns);
         max-width: var(--layout-max-width);
         margin-inline: auto;
         min-height: calc(4rem - 0.03125rem);
 
       }
       .nav_logo {
-        display: flex;
-        align-items: center;
-        align-self: stretch;
         padding-inline: var(--space-3);
 
       }
@@ -492,23 +487,14 @@ const { render = true, overlap = false } = Astro.props;
         height: auto;
       }
       .nav_menu {
-        display: flex;
-        align-items: center;
 
         padding-inline: var(--space-3);
       }
       .nav_links {
-        display: flex;
-        align-items: center;
         gap: var(--space-3);
         list-style: none;
-        padding: 0;
-        margin: 0;
       }
       .nav_label {
-        display: flex;
-        align-items: center;
-        gap: var(--space-1);
         min-height: 2.75rem;
         font: var(--primary-light) 1rem/normal var(--heading-family);
       }
@@ -529,14 +515,10 @@ const { render = true, overlap = false } = Astro.props;
         }
       }
       .nav_contact {
-        display: flex;
-        gap: var(--space-1);
-        align-items: center;
         justify-content: flex-end;
         justify-self: end;
         align-self: center;
         width: fit-content;
-        font: var(--primary-regular) var(--label-size-main)/1 var(--label-family);
         margin-right: 1rem;
       }
       .nav_contact :is(img, .nav_link-chevron) {
@@ -603,17 +585,11 @@ const { render = true, overlap = false } = Astro.props;
       }
       .nav_panel-inner {
         max-width: var(--layout-max-width);
-        margin-inline: auto;
-        display: grid;
-        grid-template-columns: var(--layout-columns);
         row-gap: 3rem;
       }
       .nav_panel-title {
-        display: flex;
-        align-items: center;
         align-self: start;
         justify-self: start;
-        gap: var(--space-1);
         color: var(--brand-500);
         font: var(--primary-light) 1.125rem/normal var(--heading-family);
       }

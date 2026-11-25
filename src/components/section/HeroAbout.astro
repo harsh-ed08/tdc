@@ -1,0 +1,76 @@
+---
+import type { ComponentProps, HTMLAttributes } from "astro/types";
+import type Section from "@/components/wrapper/Section.astro";
+import Heading from "@/components/typography/Heading.astro";
+import Img from "@/components/media/Img.astro";
+import heroImage from "@/assets/images/about-hero-img.jpg";
+
+type Props = HTMLAttributes<"section"> & Pick<ComponentProps<typeof Section>, "render">;
+const { render = true, class: className, ...rest } = Astro.props;
+---
+{render && (
+  <section class:list={["home-hero_wrap", className]} aria-labelledby="home-hero-title" {...rest}>
+    <Img class="home-hero_image cover-absolute object-fit-cover" src={heroImage} variant="constrained" sizes="(max-width: 767px) 1600px, (max-width: 1023px) 1200px, 100vw" width={1440} height={810} loading="eager" fetchPriority="high" />
+    <div class="home-hero_inner layout_frame layout_columns">
+      <div class="home-hero_rules layout_rules" aria-hidden="true"><span /><span /><span /></div>
+      <Heading tag="h1" variant="h2" id="home-hero-title" class="home-hero_title">
+        <span>We exist so that no promising</span>{" "}
+        <span>business is left at the mercy of</span>{" "}
+        <span>uncertainty.</span>
+      </Heading>
+    </div>
+  </section>
+)}
+<style is:global>
+  @layer components {
+    .home-hero_wrap {
+      position: relative;
+      isolation: isolate;
+      display: flex;
+      height: 100svh;
+      background: var(--dark-900);
+      color: var(--light-300);
+      .home-hero_image {
+        z-index: -1;
+        object-position: center;
+      }
+      .home-hero_inner {
+        align-items: end;
+
+        padding-block: 8rem 5rem;
+      }
+      .home-hero_rules {
+        --layout-rule-color: color-mix(in srgb, var(--dark-900) 30%, transparent);
+      }
+      .home-hero_title {
+        grid-column: 2 / -1;
+        margin: 0;
+        padding-inline: var(--space-3);
+        font-size: clamp(2rem, 3.889vw, 3.5rem);
+        line-height: 1;
+        letter-spacing: var(--letter-spacing-normal);
+        text-wrap: initial;
+        &::before,
+        &::after { display: none; }
+        span { display: block; }
+      }
+      @media (width < 64rem) {
+
+        .home-hero_inner { padding-bottom: 4rem; }
+        .home-hero_title { grid-column: 1 / -1; font-size: clamp(2rem, 4vw, 3rem); }
+        .home-hero_title span { display: inline; }
+      }
+      @media (width < 48rem) {
+
+        .home-hero_inner { padding-block: 6rem 3rem; }
+        .home-hero_title {
+          grid-column: 1 / -1;
+          padding-inline: var(--space-2);
+          font-size: clamp(2rem, 6vw, 2.75rem);
+          line-height: 1.1;
+        }
+        .home-hero_image { object-position: 58% center; }
+      }
+    }
+  }
+</style>

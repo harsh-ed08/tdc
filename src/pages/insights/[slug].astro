@@ -1,7 +1,7 @@
 ---
 import Layout from "@/layouts/BaseLayout.astro";
-import Heading from "@/components/typography/Heading.astro";
-import { getInsights, insightDate, type Insight } from "@/utils/insights";
+import InsightArticle from "@/components/content/InsightArticle.astro";
+import { getInsights, type Insight } from "@/utils/insights";
 
 export async function getStaticPaths() {
   const articles = await getInsights();
@@ -11,21 +11,5 @@ interface Props { article: Insight }
 const { article } = Astro.props;
 ---
 <Layout title={article.title} description={article.description ?? undefined} theme="light">
-  <article class="insight_article">
-    <a href="/insights/">All insights</a>
-    <p>{article.category} {article.publishedAt && <> · <time datetime={article.publishedAt}>{insightDate(article.publishedAt)}</time></>}</p>
-    <Heading tag="h1" variant="h2">{article.title}</Heading>
-    {article.author && <p>By {article.author}</p>}
-    {article.image && <img src={`${article.image}?auto=format&w=1400&q=85`} alt={article.imageAlt ?? ""} width="1400" height="933" />}
-    {article.description && <p class="insight_lead">{article.description}</p>}
-    {article.body?.split("\n\n").map((paragraph) => <p>{paragraph}</p>)}
-  </article>
+  <InsightArticle article={article} />
 </Layout>
-<style>
-  @layer components {
-    .insight_article { max-width: 52rem; margin-inline: auto; padding: var(--space-8) var(--space-4); }
-    .insight_article > * + * { margin-top: var(--space-4); }
-    .insight_article img { width: 100%; height: auto; }
-    .insight_article .insight_lead { font-size: 1.25rem; }
-  }
-</style>

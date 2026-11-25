@@ -10,7 +10,7 @@ const { variant = "compact" } = Astro.props;
 
 <aside class:list={["nav-promo_wrap", variant]}>
   <img
-    class="nav-promo_image"
+    class="nav-promo_image width-full object-fit-cover"
     src={variant === "compact"
       ? "/navigation/fund-compact.png"
       : variant === "mobile"
@@ -26,7 +26,7 @@ const { variant = "compact" } = Astro.props;
   <Heading tag="h3" variant="inherit" class="nav-promo_title">
     ₹1,500 Cr Special Situations &amp; last-mile real estate debt fund activated
   </Heading>
-  <a class="nav-promo_action" href="#"
+  <a class="nav-promo_action flex-horizontal-nowrap gap-1" href="#"
     ><RollLabel>KNOW MORE</RollLabel><CtaArrow /></a
   >
 </aside>
@@ -40,9 +40,7 @@ const { variant = "compact" } = Astro.props;
       row-gap: 1rem;
       .nav-promo_image {
         grid-row: 1 / 4;
-        width: 100%;
         height: 14.5rem;
-        object-fit: cover;
       }
       .nav-promo_label,
       .nav-promo_action {
@@ -57,9 +55,6 @@ const { variant = "compact" } = Astro.props;
         text-wrap: initial;
       }
       .nav-promo_action {
-        display: flex;
-        align-items: center;
-        gap: var(--space-1);
         width: fit-content;
         align-self: start;
         max-width: 100%;

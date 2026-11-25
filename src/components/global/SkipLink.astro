@@ -19,22 +19,33 @@ const {
 
 {
   render && (
-    <Button element="link" href={`#${target}`} class="skip-link">
-      {label}
-    </Button>
+    <div class="skip-link_wrap position-fixed">
+      <Button element="link" href={`#${target}`} class="skip-link_button padding-block-1 padding-inline-2">
+        {label}
+      </Button>
+    </div>
   )
 }
 
 <style is:global>
   @layer components {
-    .skip-link {
-      position: fixed;
+    .skip-link_wrap {
       top: var(--space-2);
       inset-inline-start: var(--space-2);
       z-index: 100;
+      opacity: 0;
+      pointer-events: none;
       translate: 0 calc(-100% - var(--space-2) * 2);
 
-      &:focus {
+      .skip-link_button {
+        font-size: var(--label-size-small);
+        width: max-content;
+        max-width: calc(100vw - var(--space-2) * 2);
+      }
+
+      &:has(.skip-link_button:focus-visible) {
+        opacity: 1;
+        pointer-events: auto;
         translate: 0 0;
       }
     }

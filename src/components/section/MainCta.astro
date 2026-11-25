@@ -8,14 +8,14 @@ import background from "@/assets/images/main-cta-desktop.avif";
 ---
 
 <section class="main-cta_wrap" aria-labelledby="main-cta-title">
-  <Image class="main-cta_image" src={background} alt="" widths={[750, 1440, 1920, 2880]} sizes="(max-width: 767px) 950px, 100vw" loading="lazy" />
+  <Image class="main-cta_image cover-absolute object-fit-cover" src={background} alt="" widths={[750, 1440, 1920, 2880]} sizes="(max-width: 767px) 950px, 100vw" loading="lazy" />
   <img class="main-cta_overlay" src="/cta-overlay.svg" alt="" width="547" height="860" loading="lazy" />
-  <div class="main-cta_inner layout_frame">
+  <div class="main-cta_inner layout_frame layout_columns">
     <div class="main-cta_rules layout_rules" aria-hidden="true"><span /><span /><span /></div>
     <div class="main-cta_content">
-      <Heading tag="h2" variant="inherit" id="main-cta-title" class="main-cta_title">Certain to the dot.</Heading>
-      <p class="main-cta_description">Every time, on every deal, down to the last decimal.</p>
-      <a class="main-cta_link" href={contactHref}>
+      <Heading tag="h2" variant="h3" id="main-cta-title" class="main-cta_title">Certain to the dot.</Heading>
+      <p class="main-cta_description text-style-main">Every time, on every deal, down to the last decimal.</p>
+      <a class="main-cta_link flex-horizontal-nowrap gap-1 text-style-label" href={contactHref}>
         <RollLabel>CONTACT</RollLabel>
         <CtaArrow />
       </a>
@@ -34,12 +34,7 @@ import background from "@/assets/images/main-cta-desktop.avif";
       background: var(--dark-900);
       color: var(--light-300);
       .main-cta_image {
-        position: absolute;
-        inset: 0;
         z-index: -2;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
       }
       .main-cta_overlay {
         position: absolute;
@@ -52,9 +47,6 @@ import background from "@/assets/images/main-cta-desktop.avif";
         pointer-events: none;
       }
       .main-cta_inner {
-        position: relative;
-        display: grid;
-        grid-template-columns: var(--layout-columns);
         align-items: end;
 
         padding-block: 5rem;
@@ -68,9 +60,7 @@ import background from "@/assets/images/main-cta-desktop.avif";
       }
       .main-cta_title {
         margin: 0;
-        font-family: var(--heading-family);
         font-size: clamp(2rem, 3.333vw, 3rem);
-        font-weight: var(--primary-light);
         line-height: 1.15;
         letter-spacing: var(--letter-spacing-normal);
         &::before, &::after { display: none; }
@@ -78,18 +68,13 @@ import background from "@/assets/images/main-cta-desktop.avif";
       .main-cta_description {
         max-width: 20rem;
         margin: 1rem 0 1.5rem;
-        font-family: var(--primary-family);
         font-size: 1.125rem;
         font-weight: var(--primary-light);
         line-height: 1.35;
       }
       .main-cta_link {
-        display: flex;
-        align-items: center;
-        gap: var(--space-1);
         width: fit-content;
         min-height: 2.75rem;
-        font: var(--primary-regular) var(--label-size-main)/1 var(--label-family);
         &:focus-visible { outline: var(--focus-width) solid currentColor; outline-offset: var(--focus-offset); }
       }
       @media (width < 64rem) {

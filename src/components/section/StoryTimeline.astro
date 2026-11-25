@@ -1,23 +1,28 @@
 ---
 import Heading from "@/components/typography/Heading.astro";
 import Eyebrow from "@/components/typography/Eyebrow.astro";
+import Button from "@/components/Button.astro";
 import { timelineMilestones } from "@/data/timeline";
 ---
 
 <section class="story_wrap theme-light" aria-labelledby="story-title">
   <div class="story_inner layout_frame">
     <div class="story_rules layout_rules" aria-hidden="true"><span /><span /><span /></div>
-    <div class="story_header">
-      <Eyebrow class="story_label">Our story</Eyebrow>
+    <div class="story_header layout_columns">
+      <Eyebrow variant="section" class="story_label">Our story</Eyebrow>
       <Heading tag="h2" variant="inherit" id="story-title" class="story_title">A decade of building institutional capital expertise.</Heading>
+    </div>
+    <div class="flex-horizontal-wrap justify-content-end gap-2 padding-inline-3 margin-top-3">
+      <Button element="link" href="#before-timeline" emphasis="secondary" class="padding-block-1 padding-inline-2" aria-label="Skip timeline upward to Mission and Vision" data-story-skip><span aria-hidden="true">↑</span> Skip up</Button>
+      <Button element="link" href="#leadership" emphasis="secondary" class="padding-block-1 padding-inline-2" aria-label="Skip timeline downward to Leadership" data-story-skip>Skip down <span aria-hidden="true">↓</span></Button>
     </div>
     <div class="story_stage">
       <div class="story_viewport" tabindex="0" role="region" aria-label="Company timeline. Use arrow keys to explore milestones.">
-        <ol class="story_track">
+        <ol class="story_track flex-horizontal-nowrap align-items-stretch">
           {timelineMilestones.map((milestone, index) => (
             <li class:list={["story_item", index === 0 && "is-active"]} data-year={milestone.year} aria-current={index === 0 ? "step" : undefined}>
-              <div class="story_visual">
-                <div class="story_art">
+              <div class="story_visual flex-horizontal-nowrap align-items-end">
+                <div class="story_art ratio-1-1">
                   {milestone.image ? (
                     <img src={milestone.image} alt={milestone.imageAlt ?? ""} width="320" height="320" loading="lazy" />
                   ) : (
@@ -27,7 +32,7 @@ import { timelineMilestones } from "@/data/timeline";
                 </div>
               </div>
               <div class="story_ruler" aria-hidden="true"><i /></div>
-              <p class="story_description"><span class="story_dot" aria-hidden="true" />{milestone.description}</p>
+              <p class="story_description"><span class="story_dot flex-noshrink" aria-hidden="true" />{milestone.description}</p>
               <span class="story_item-year">{milestone.year}</span>
             </li>
           ))}
@@ -96,6 +101,16 @@ import { timelineMilestones } from "@/data/timeline";
           ScrollTrigger.update();
           releasing = false;
         };
+        const skip = () => {
+          releasing = true;
+          locked = false;
+          observer.disable();
+          motion?.kill();
+          moving = false;
+        };
+        const finishSkip = () => { releasing = false; };
+        section.addEventListener("story:skip", skip);
+        section.addEventListener("story:skip-end", finishSkip);
         const goTo = (index: number) => {
           if (moving) return;
           if (index < 0 || index >= items.length) {
@@ -160,7 +175,7 @@ import { timelineMilestones } from "@/data/timeline";
         if (active < 0) select(0);
         // Catch a boundary-crossing gesture before the browser overshoots the pin.
         const captureEntry = (event: Event, delta: number) => {
-          if (locked || !event.cancelable) return;
+          if (locked || releasing || !event.cancelable) return;
           const y = window.scrollY;
           const entersDown = delta > 0 && y < trigger.start && y + delta >= trigger.start;
           const entersUp = delta < 0 && y > trigger.end && y + delta <= trigger.end;
@@ -215,6 +230,8 @@ import { timelineMilestones } from "@/data/timeline";
           entryReset?.kill();
           trigger.kill();
           document.removeEventListener("keydown", onKey);
+          section.removeEventListener("story:skip", skip);
+          section.removeEventListener("story:skip-end", finishSkip);
           window.removeEventListener("scroll", holdPosition);
           window.removeEventListener("wheel", interceptEntry);
           window.removeEventListener("touchstart", onTouchStart);
@@ -306,9 +323,41 @@ import { timelineMilestones } from "@/data/timeline";
     });
   }
 
+  let skipMotion: gsap.core.Tween | undefined;
+  document.addEventListener("click", (event) => {
+    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    if (!(event.target instanceof Element)) return;
+    const link = event.target.closest<HTMLAnchorElement>("[data-story-skip]");
+    if (!link) return;
+    const destination = document.getElementById(link.hash.slice(1));
+    if (!destination) return;
+    event.preventDefault();
+    skipMotion?.kill();
+    const section = link.closest(".story_wrap");
+    section?.dispatchEvent(new Event("story:skip"));
+    const nav = document.querySelector(".nav_wrap")?.getBoundingClientRect().height ?? 0;
+    const position = { y: window.scrollY };
+    const endSkip = () => section?.dispatchEvent(new Event("story:skip-end"));
+    skipMotion = gsap.to(position, {
+      y: Math.max(0, window.scrollY + destination.getBoundingClientRect().top - nav),
+      duration: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 0.65,
+      ease: "power2.inOut",
+      onUpdate: () => {
+        window.scrollTo({ top: position.y, behavior: "instant" });
+        ScrollTrigger.update();
+      },
+      onComplete: () => {
+        endSkip();
+        destination.focus({ preventScroll: true });
+        history.replaceState(history.state, "", link.hash);
+      },
+      onInterrupt: endSkip,
+    });
+  });
+
   initStoryTimeline();
   document.addEventListener("astro:page-load", initStoryTimeline);
-  document.addEventListener("astro:before-swap", () => media?.revert());
+  document.addEventListener("astro:before-swap", () => { skipMotion?.kill(); media?.revert(); });
   document.fonts.ready.then(() => ScrollTrigger.refresh());
 </script>
 
@@ -319,25 +368,22 @@ import { timelineMilestones } from "@/data/timeline";
       background: var(--light-300);
       color: var(--dark-900);
       .story_inner {
-        position: relative;
 
         padding-block: clamp(1.5rem, 5svh, 4rem) 2rem;
       }
       .story_rules { grid-template-columns: minmax(0, 2fr) minmax(0, 8fr); }
       .story_rules > span:nth-child(n + 3) { display: none; }
-      .story_header { display: grid; grid-template-columns: var(--layout-columns); align-items: start; gap: 0; }
+      .story_header { align-items: start; gap: 0; }
       .story_label {
         padding: var(--space-1);
-        .eyebrow_marker { width: 0.5rem; height: 0.75rem; background: url("/purpose-icon.svg") center / contain no-repeat; }
-        .eyebrow_text { font: var(--primary-regular) var(--label-size-small)/1.4 var(--label-family); text-transform: uppercase; &::before, &::after { display: none; } }
       }
       .story_title { grid-column: 2 / -1; margin: 0; padding-inline: var(--space-3); font: var(--primary-light) clamp(1.5rem, 2.22vw, 2rem)/1.2 var(--heading-family); &::before, &::after { display: none; } }
       .story_stage { position: relative; margin-top: clamp(2rem, 5svh, 4rem); margin-left: 20%; }
       .story_viewport { overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: thin; scroll-snap-type: x mandatory; &:focus-visible { outline: var(--focus-width) solid var(--brand-500); outline-offset: var(--focus-offset); } }
-      .story_track { display: flex; position: relative; width: max-content; list-style: none; margin: 0; padding: 0; }
+      .story_track { position: relative; width: max-content; list-style: none; margin: 0; padding: 0; }
       .story_item { flex: 0 0 var(--story-step); width: var(--story-step); scroll-snap-align: start; }
-      .story_visual { height: clamp(10rem, 30svh, 20rem); display: flex; align-items: end; }
-      .story_art { position: relative; width: 65%; aspect-ratio: 1; display: grid; place-items: center; background: var(--white); }
+      .story_visual { height: clamp(10rem, 30svh, 20rem); }
+      .story_art { position: relative; width: 65%; display: grid; place-items: center; background: var(--white); }
       .story_art img { width: 100%; height: 100%; object-fit: cover; }
       .story_wordmark { font: var(--primary-medium) clamp(1.25rem, 2.5vw, 2.25rem)/1 var(--heading-family); }
       .story_wordmark.finlender { color: var(--partner-finlender); font-family: var(--primary-family); font-weight: var(--primary-bold); font-style: italic; }
@@ -345,7 +391,7 @@ import { timelineMilestones } from "@/data/timeline";
       .story_ruler { display: grid; align-items: center; height: 4.5rem; }
       .story_ruler i { display: block; height: 3rem; border-left: 1px solid color-mix(in srgb, var(--dark-900) 55%, transparent); }
       .story_description { display: flex; gap: var(--space-2); max-width: 22rem; margin: 0; padding-right: 2rem; font: var(--primary-regular) 1rem/1.4 var(--primary-family); }
-      .story_dot { flex: none; width: 0.5rem; height: 0.75rem; margin-top: 0.2rem; background: url("/purpose-icon.svg") center / contain no-repeat; }
+      .story_dot { width: 0.5rem; height: 0.75rem; margin-top: 0.2rem; background: url("/purpose-icon.svg") center / contain no-repeat; }
       .story_item-year { display: block; margin-top: var(--timeline-year-gap); color: var(--brand-500); font: var(--primary-light) 2rem/1 var(--heading-family); }
       .story_year { display: none; margin: 0; color: var(--brand-500); font: var(--primary-light) clamp(3.5rem, 11svh, 6.75rem)/1 var(--heading-family); }
       &.is-animated {

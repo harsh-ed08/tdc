@@ -27,7 +27,7 @@ const panels = [
 ];
 ---
 
-<section class="beliefs_wrap theme-dark" aria-label="Our mission and vision">
+<section id="before-timeline" tabindex="-1" class="beliefs_wrap theme-dark" aria-label="Our mission and vision">
   <div class="beliefs_inner layout_frame">
     <div class="layout_rules" aria-hidden="true"><span /><span /><span /></div>
     <Tabs variant="side" id="mission-vision" class="beliefs_tabs">
@@ -36,10 +36,10 @@ const panels = [
       </Fragment>
       {panels.map((panel) => (
         <div class:list={["beliefs_panel", panel.name.toLowerCase()]}>
-          <Heading tag="h2" variant="inherit" class="beliefs_title">{panel.title}</Heading>
-          <div class="beliefs_visual">
-            <Image class="beliefs_image" src={panel.image} alt="" sizes="(max-width: 767px) 100vw, 51vw" />
-            <div class="beliefs_card">
+          <Heading tag="h2" variant="h3" class="beliefs_title">{panel.title}</Heading>
+          <div class="beliefs_visual width-full">
+            <Image class="beliefs_image display-block object-fit-cover" src={panel.image} alt="" sizes="(max-width: 767px) 100vw, 51vw" />
+            <div class="beliefs_card flex-vertical-nowrap align-items-stretch justify-content-between text-style-small">
               <div>{panel.paragraphs.map((text) => <p>{text}</p>)}</div>
               <img src="/purpose-icon.svg" alt="" width="8" height="12" />
             </div>
@@ -56,7 +56,6 @@ const panels = [
       background: var(--background);
       color: var(--text);
       .beliefs_inner {
-        position: relative;
 
         padding-block: clamp(3rem, 5.56vw, 5rem);
       }
@@ -96,8 +95,6 @@ const panels = [
         max-width: 45rem;
         margin: 0;
         padding-inline: var(--space-3);
-        font-family: var(--heading-family);
-        font-weight: var(--primary-light);
         font-size: clamp(2rem, 3.333vw, 3rem);
         line-height: 1;
         letter-spacing: var(--letter-spacing-normal);
@@ -107,31 +104,24 @@ const panels = [
       .beliefs_visual {
         position: relative;
         min-width: 0;
-        width: 100%;
         margin-top: clamp(3rem, 5.56vw, 5rem);
         aspect-ratio: 1049 / 474;
       }
       .beliefs_image {
-        display: block;
         width: 69.5%;
         height: 100%;
         margin-left: auto;
-        object-fit: cover;
       }
       .beliefs_card {
         position: absolute;
         left: 0;
         top: 50%;
         transform: translateY(-50%);
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
         width: 37.5%;
         min-height: 81.2%;
         padding: clamp(1rem, 2.22vw, 2rem) 1rem;
         background: var(--brand-500);
         color: var(--dark-900);
-        font-family: var(--primary-family);
         font-size: clamp(0.875rem, 1.11vw, 1rem);
         font-weight: var(--primary-light);
         line-height: 1.3;

@@ -1,48 +1,56 @@
-# Lumos for Astro — project conventions
+# Building with Lumos
 
-This project uses Astro components and plain CSS, not Lumos for Webflow.
-The implementation source of truth is `src/styles/base.css` (tokens and themes),
-`src/styles/patterns.css` (shared patterns), `src/styles/utilities.css`, and
-the rendered `/style-guide` page.
+How to build pages in this project so they stay consistent and cheap to change. Read this before adding a page, a section, or a style.
 
-## Styling
+## Building a page
 
-- Keep the cascade order `base, patterns, components, utilities`. Component CSS
-  belongs in `@layer components`; scope selectors under the component class.
-- Use existing color, font-family, font-weight, spacing, border, focus, and motion
-  variables. Add a named token to `base.css` when a new reusable design value is
-  needed, and show it in the style guide where useful.
-- Use `Heading`, `Paragraph`, `Eyebrow`, `Img`, and `Button` where their APIs fit.
-  Use `Section`/`Container` for standard stacked layouts. The custom editorial
-  homepage uses `layout_frame` instead: it preserves the supplied grid without
-  inheriting the standard container's flex layout and child-margin resets.
-- Use `layout_rules` for decorative grid lines. It does not intercept input.
-  Its parent establishes a stacking context so lines stay within their section.
-- Use `theme-light`, `theme-dark`, and semantic `--background`/`--text` variables
-  for theme-aware surfaces. Explicit palette variables are appropriate for
-  fixed artwork treatments and brand accents.
-- Keep existing component names (`story_wrap`, `story_year`, etc.) for custom
-  layouts; do not invent Webflow utility conventions or add Tailwind.
+- Compose from components. Write raw markup only for what none of them cover.
+- Most sections can be built without creating new components: a `Section`, a `ContentWrapper` inside it, the `Eyebrow`, `Heading`, `Paragraph` and `ButtonWrapper` inside that. Prefer `ContentWrapper` to a plain `div` for holding content: it ties text and flex alignment to one `--_alignment` variable that `ButtonWrapper` and everything else inside reads, so `centered` on the default `stack` variant moves the whole block together.
+- Any layout needing a custom style tag, script tag, or frontmatter becomes its own component — see [Custom components](#custom-components).
 
-## Intentional custom geometry
+## Custom components
 
-Image aspect ratios, artwork sizes, grid proportions, viewport-based section
-heights, breakpoints, and animation offsets remain component-specific. Do not
-replace these with unrelated spacing or heading tokens just to remove numbers.
-`Heading variant="inherit"` supports reference-specific display typography.
-General spacing follows `--space-*`; `--timeline-year-gap` intentionally keeps
-the requested 40px gap at every breakpoint. FinLender's blue is a partner color,
-not an additional site brand color.
+Only reach for one when custom CSS, scripts or frontmatter are needed. Keep those in the component file rather than the page. Copy a component, regardless of how small, into another page and it should work with nothing else moved. Tokens and utilities in `src/styles` are the global exception.
 
-## Motion and validation
+- Build its insides from components too — a `Heading` rather than an `h2` with a class, a `Button` rather than a styled link — as `Card` does.
+- Wrap the contents by default, not the section, leaving the section's props free to differ per page. Name it for its role and variant — `HeroBlog`, `CtaMain`, `HeroTeam` — and place it in `src/components/content/`.
+- Wrap the whole section only when those styles or scripts act on the section itself such as a pinned full-height scrolltrigger section. Use the same naming pattern, but place it in `src/components/section/`.
+- Forward props with `ComponentProps<typeof Section>` from `astro/types` rather than restating names and types. A section component passes up a `Pick` of `render`, `theme`, `paddingTop` and `paddingBottom`, and forwards `...rest` attributes — or only `render` and `...rest` when the section itself is styled, since those settings hold for every instance.
+- A content component passes up content, not styling, so text sizes hold across instances. If passing a heading's `tag` up, set its `variant` yourself: `variant` defaults to `tag`, so the size would otherwise move with the level.
+- Text identical on every page stays written in the component; text that differs per instance is a prop.
 
-Use `--hover-*` and `--motion-*` for shared CSS transitions. GSAP's timing values
-are in seconds; keep them coordinated with corresponding CSS motion tokens.
-Preserve reduced-motion fallbacks, keyboard access, and animation cleanup.
-The timeline uses native CSS sticky positioning with scroll-driven GSAP motion
-on touch and hybrid devices. Do not add document scroll locking or competing
-touch handlers to that mode. Use stable viewport units; short landscape layouts
-and reduced motion use the accessible native horizontal scroller. Mouse-only
-desktop layouts retain gesture capture. Keep both paths functional when editing.
-After changes run `npm run check` and `npm run build`, then inspect the homepage
-and style guide at desktop and mobile widths. Keep the demo's noindex controls.
+## New style checklist
+
+Every box has to be ticked before new styling is accepted.
+
+- [ ] Isn't already available as a `variant`. New CSS is the last resort.
+- [ ] Uses utilities only to override one instance of a variant — a change or two that stand on their own. The moment several utilities have to hold together to make a look, that look is a variant, not a stack of classes.
+- [ ] Doesn't repeat the same utility, prop value or attribute on every instance of an element — that means the default is wrong. Fix it at the source rather than in the markup: a token in `src/styles/base.css`, the prop's default in the component, or a new prop defaulting to whichever version is used more often.
+- [ ] Ships with the new component that needs it, in that component's own `<style is:global>` under `@layer components`. A page carries no CSS.
+- [ ] Ends its root class in `_wrap` — `.blog-gallery_wrap`, `.hero-condensed_wrap`, `.cta-impact_wrap` — and prefixes every child with the family name: `.blog-gallery_layout`, `.blog-gallery_title`, `.blog-gallery_text`. A variant is a bare class beside the root (`.tabs_wrap.side`), so the two share a namespace: without `_wrap`, a variant named for a component — `button`, `card` — quietly inherits that component's styles.
+- [ ] Skips `_wrap` only when the class belongs in `patterns.css` or `utilities.css`. Every component root otherwise ends in `_wrap`, even when it has no children.
+- [ ] Names children for their role, never their mechanism: `_layout` or `_list`, not `_grid` or `_flex`, since the property behind them changes.
+- [ ] Carries a pattern class beside the custom one wherever one fits — `text-style-h3`, `theme-invert` — leaving the custom class to hold only what it overrides. Editing a pattern then reaches every component using it.
+- [ ] Styles emphasis inside a heading from the parent — `.heading-accent strong`, `.heading-accent em` — rather than classing the `strong` or `em`, which rich text can't carry.
+- [ ] Uses no `px`. Lengths are `rem`, a max width on text is `ch`, and anything that should track the font size — letter spacing, an icon or flourish sitting in text — is `em`.
+- [ ] Keeps each media query nested in the rule it changes, and shares one query across the whole component. Split into one per variant only where variants wrap at different widths, as `ContentWrapper` does. Never one per child or per property: that spreads a single value across the file.
+- [ ] Uses the breakpoints `Grid` declares, read from there rather than from memory, since a site may change them. Any other breakpoint needs a reason.
+
+## Graphics built from elements
+
+A graphic that has to scale as one piece — an illustration, diagram or mockup
+whose parts are still swappable and animatable — is an artboard with
+`container-type: inline-size`, an `aspect-ratio`, and every length inside in
+`cqw`. It is the one place the rem tokens are deliberately not used. See the
+`lumos-scaling-graphic` skill.
+
+## New component checklist
+
+Every box has to be ticked before a component is done.
+
+- [ ] Earns its existence. A new kind of card is a `Card` variant or a conditional prop on it, not a second card component; a new component needs a case the existing ones genuinely can't cover.
+- [ ] Has `render`, default `true`, and outputs nothing when it is `false`, when a prop it needs is missing, or when `slotContent` from `@/utils/slots.ts` — not `Astro.slots.has` — finds its slots empty.
+- [ ] Orders props the same way as other components in the type and the destructure: `render`, content that changes per instance, `variant`, props that only apply to some variants, then occasional settings. `class` and `...rest` last.
+- [ ] Puts variant-specific props behind a discriminated union on `variant`, `never` on the variants that don't take them, so the wrong prop fails to type-check rather than being ignored. Destructure through a widened `AllProps` alias, as `Card` and `Img` do.
+- [ ] Documents each prop with the exact wording other components already use for it. A shared prop only gets its own description where it genuinely behaves differently.
+- [ ] Adds no comments beyond those prop tooltips, the banners dividing a stylesheet into sections, and one line labelling each section of a page.
