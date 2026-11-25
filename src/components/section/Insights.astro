@@ -1,0 +1,151 @@
+---
+import Heading from "@/components/typography/Heading.astro";
+import Paragraph from "@/components/typography/Paragraph.astro";
+import CtaArrow from "@/components/typography/CtaArrow.astro";
+import RollLabel from "@/components/typography/RollLabel.astro";
+import { getInsights, insightDate, type Insight } from "@/utils/insights";
+import { selectInsights } from "@/utils/insight-filter.mjs";
+import "@/styles/insights.css";
+
+let articles: Insight[] = [];
+let failed = false;
+try { articles = await getInsights(); }
+catch (error) { failed = true; console.error("Could not load insights:", error); }
+const businesses = [...new Set(["Private Credit", "Investment Banking", "Special Situation", ...articles.map((article) => article.business).filter(Boolean)])];
+const postTypes = [...new Set(articles.map((article) => article.postType).filter(Boolean))].sort();
+const initial = selectInsights(articles);
+---
+
+<section class="insights_wrap" aria-labelledby="insights-title" data-insights>
+  <div class="insights_frame layout_frame">
+    <div class="layout_rules" aria-hidden="true"><span /><span /></div>
+    <header class="insights_intro">
+      <Heading tag="h1" variant="inherit" id="insights-title" class="insights_title">We break down the<br class="insights_desktop-break" /> smallest details so you can<br class="insights_desktop-break" /> see the destination.</Heading>
+      <Paragraph class="insights_description">Expert perspectives, trends and industry-specific point of view on India's mid-market financing.</Paragraph>
+    </header>
+    <aside class="insights_sidebar" aria-label="Filter insights">
+      <form class="insights_filters" role="search">
+        <p class="insights_label">Filters</p>
+        <label class="insights_search">
+          <span class="insights_sr">Search insights</span>
+          <input type="search" name="search" placeholder="Search" autocomplete="off" data-search />
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="6" stroke="currentColor" stroke-width="1.5"/><path d="m15 15 6 6" stroke="currentColor" stroke-width="1.5"/></svg>
+        </label>
+        <details class="insights_categories">
+          <summary>By type <span aria-hidden="true"></span></summary>
+          <fieldset>
+            <legend class="insights_sr">Types</legend>
+            {postTypes.map((postType) => <label><input type="checkbox" name="postType" value={postType} /> {postType}</label>)}
+          </fieldset>
+        </details>
+        <details class="insights_categories" open>
+          <summary>By business <span aria-hidden="true"></span></summary>
+          <fieldset>
+            <legend class="insights_sr">Businesses</legend>
+            {businesses.map((business) => <label><input type="checkbox" name="business" value={business} /> {business}</label>)}
+          </fieldset>
+        </details>
+        <button type="reset" class="insights_reset" hidden>Clear filters</button>
+      </form>
+    </aside>
+    <div class="insights_results">
+      {failed && <p role="alert">We couldn't load our insights. Please refresh the page to try again.</p>}
+      <div class="insights_grid" id="insights-grid">
+        {articles.map((article) => (
+          <article class:list={["insights_card", initial.spotlight?._id === article._id && "is-spotlight"]}
+            data-card data-id={article._id} data-category={article.category} data-type={article.postType} data-business={article.business} data-title={article.title}
+            data-description={article.description ?? ""} data-spotlight={article.spotlight}
+            hidden={article !== initial.spotlight && !initial.cards.includes(article)}>
+            <a class="insights_card-link" href={`/insights/${encodeURIComponent(article.slug)}/`}>
+              <div class="insights_visual">
+                {article === initial.spotlight ? <img src="/spotlight-post-image.avif" alt="" width="1200" height="800" loading="eager" /> : article.image ? <img src={`${article.image}?auto=format&w=1200&q=85`} alt={article.imageAlt ?? ""} width="1200" height="800" loading="lazy" /> : <div class="insights_placeholder" aria-hidden="true" />}
+                <p class="insights_meta"><span>{article.postType}</span>{article.publishedAt && <time datetime={article.publishedAt}>{insightDate(article.publishedAt)}</time>}{article.business && <span class="insights_business">{article.business}</span>}</p>
+              </div>
+              <div class="insights_card-copy">
+                <Heading tag="h2" variant="inherit" class="insights_card-title">{article.title}</Heading>
+                {article.description && <Paragraph class="insights_card-description">{article.description}</Paragraph>}
+              </div>
+            </a>
+          </article>
+        ))}
+      </div>
+      <p data-empty hidden={failed || initial.total > 0}>No insights found. Try a different filter or search.</p>
+      <div class="insights_bottom">
+        <button class="insights_more" type="button" data-more aria-controls="insights-grid" hidden={!initial.hasMore}><RollLabel>SEE MORE</RollLabel><CtaArrow /></button>
+        <p class="insights_count insights_sr" data-count aria-live="polite" aria-atomic="true">{initial.total > 0 ? `Showing ${Math.min(initial.total, 6)} of ${initial.total} insights` : ""}</p>
+      </div>
+      <noscript><p>Enable JavaScript to use filters and load more insights.</p></noscript>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { selectInsights } from "@/utils/insight-filter.mjs";
+  document.querySelectorAll<HTMLElement>("[data-insights]").forEach((root) => {
+    const form = root.querySelector<HTMLFormElement>("form")!;
+    const search = root.querySelector<HTMLInputElement>("[data-search]")!;
+    const businesses = [...root.querySelectorAll<HTMLInputElement>('[name="business"]')];
+    const postTypes = [...root.querySelectorAll<HTMLInputElement>('[name="postType"]')];
+    const more = root.querySelector<HTMLButtonElement>("[data-more]")!;
+    const reset = root.querySelector<HTMLButtonElement>('[type="reset"]')!;
+    const accordions = [...root.querySelectorAll<HTMLDetailsElement>(".insights_categories")];
+    const animations = new Map<HTMLDetailsElement, Animation>();
+    let activeAccordion = accordions.find((details) => details.open);
+    function slide(details: HTMLDetailsElement, opening: boolean) {
+      const start = details.getBoundingClientRect().height;
+      animations.get(details)?.cancel();
+      details.open = true;
+      const summary = details.querySelector<HTMLElement>("summary")!;
+      const end = opening ? details.getBoundingClientRect().height : summary.getBoundingClientRect().height;
+      details.querySelector<HTMLFieldSetElement>("fieldset")!.inert = !opening;
+      summary.setAttribute("aria-expanded", String(opening));
+      const duration = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : parseFloat(getComputedStyle(root).getPropertyValue("--motion-close-duration"));
+      const animation = details.animate([{ height: `${start}px` }, { height: `${end}px` }], { duration, easing: "ease-in-out" });
+      animations.set(details, animation);
+      animation.onfinish = () => {
+        details.open = opening;
+        animations.delete(details);
+      };
+    }
+    accordions.forEach((details) => {
+      const summary = details.querySelector<HTMLElement>("summary")!;
+      summary.setAttribute("aria-expanded", String(details.open));
+      summary.addEventListener("click", (event) => {
+        event.preventDefault();
+        const opening = activeAccordion !== details;
+        if (activeAccordion && activeAccordion !== details) slide(activeAccordion, false);
+        activeAccordion = opening ? details : undefined;
+        slide(details, opening);
+      });
+    });
+    const cards = [...root.querySelectorAll<HTMLElement>("[data-card]")].map((element) => ({
+      element, category: element.dataset.category!, postType: element.dataset.type!, business: element.dataset.business!, title: element.dataset.title!,
+      description: element.dataset.description, spotlight: element.dataset.spotlight === "true",
+    }));
+    let limit = 6;
+    function update() {
+      const selectedBusinesses = businesses.filter((input) => input.checked).map((input) => input.value);
+      const selectedTypes = postTypes.filter((input) => input.checked).map((input) => input.value);
+      const result = selectInsights(cards, selectedTypes, search.value, limit, selectedBusinesses);
+      cards.forEach((card) => {
+        card.element.hidden = card !== result.spotlight && !result.cards.includes(card);
+        card.element.classList.toggle("is-spotlight", card === result.spotlight);
+      });
+      more.hidden = !result.hasMore;
+      reset.hidden = !selectedBusinesses.length && !selectedTypes.length && !search.value;
+      root.querySelector<HTMLElement>("[data-empty]")!.hidden = result.total > 0 || cards.length === 0;
+      root.querySelector<HTMLElement>("[data-count]")!.textContent = cards.length ? `Showing ${result.cards.length} of ${result.total} insights` : "";
+    }
+    form.addEventListener("submit", (event) => event.preventDefault());
+    form.addEventListener("change", () => {
+      limit = 6; update();
+    });
+    search.addEventListener("input", () => { limit = 6; update(); });
+    form.addEventListener("reset", () => { requestAnimationFrame(() => { limit = 6; update(); }); });
+    more.addEventListener("click", () => {
+      const previouslyHidden = cards.filter((card) => card.element.hidden);
+      limit += 6; update();
+      previouslyHidden.find((card) => !card.element.hidden)?.element.querySelector("a")?.focus({ preventScroll: true });
+    });
+  });
+</script>

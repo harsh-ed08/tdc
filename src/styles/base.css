@@ -11,6 +11,9 @@
   --brand-500: #fe6730;
   --brand-400: #f17608;
   --brand-text: var(--dark-900);
+  --business-private-credit: #e6ffc2;
+  --business-investment-banking: #c5eaff;
+  --business-special-situations: #fffec2;
   --white: #fff;
   /* Partner identity, used only for the FinLender wordmark. */
   --partner-finlender: #07467d;
