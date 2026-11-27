@@ -1,6 +1,7 @@
 // @ts-check
 import { defineConfig, fontProviders } from "astro/config";
 import { loadEnv } from "vite";
+import { embeddedPreview } from "./scripts/embedded-preview.mjs";
 
 import sanity from "@sanity/astro";
 
@@ -28,7 +29,10 @@ export default defineConfig({
     },
   ],
 
-  vite: { build: { cssTarget: "safari15.4" } },
+  vite: {
+    plugins: [embeddedPreview()],
+    build: { cssTarget: "safari15.4" },
+  },
    integrations: [
     sanity({
       projectId: "9y08w03c",

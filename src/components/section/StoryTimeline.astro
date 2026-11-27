@@ -12,7 +12,7 @@ import { timelineMilestones } from "@/data/timeline";
       <Eyebrow variant="section" class="story_label">Our story</Eyebrow>
       <Heading tag="h2" variant="inherit" id="story-title" class="story_title">A decade of building institutional capital expertise.</Heading>
     </div>
-    <div class="flex-horizontal-wrap justify-content-end gap-2 padding-inline-3 margin-top-3">
+    <div class="story_controls flex-horizontal-wrap justify-content-end gap-2 padding-inline-3 margin-top-3">
       <Button element="link" href="#before-timeline" emphasis="secondary" class="padding-block-1 padding-inline-2" aria-label="Skip timeline upward to Mission and Vision" data-story-skip><span aria-hidden="true">↑</span> Skip up</Button>
       <Button element="link" href="#leadership" emphasis="secondary" class="padding-block-1 padding-inline-2" aria-label="Skip timeline downward to Leadership" data-story-skip>Skip down <span aria-hidden="true">↓</span></Button>
     </div>
@@ -57,7 +57,7 @@ import { timelineMilestones } from "@/data/timeline";
     media?.revert();
     media = gsap.matchMedia();
     media.add({
-      desktop: "(prefers-reduced-motion: no-preference) and (hover: hover) and (pointer: fine) and (min-height: 640px)",
+      desktop: "(prefers-reduced-motion: no-preference) and (hover: hover) and (pointer: fine) and (min-height: 37.5rem)",
       touch: "(any-pointer: coarse)",
     }, (context) => {
       if (!context.conditions?.desktop || context.conditions.touch) return;
@@ -101,12 +101,18 @@ import { timelineMilestones } from "@/data/timeline";
           ScrollTrigger.update();
           releasing = false;
         };
-        const skip = () => {
+        const skip = (event: Event) => {
           releasing = true;
           locked = false;
           observer.disable();
           motion?.kill();
+          entryReset?.kill();
           moving = false;
+          gestureUsed = false;
+          const direction = (event as CustomEvent<{ direction: number }>).detail.direction;
+          const index = direction > 0 ? items.length - 1 : 0;
+          select(index);
+          gsap.set(track, { x: -distance() * index / (items.length - 1) });
         };
         const finishSkip = () => { releasing = false; };
         section.addEventListener("story:skip", skip);
@@ -334,7 +340,9 @@ import { timelineMilestones } from "@/data/timeline";
     event.preventDefault();
     skipMotion?.kill();
     const section = link.closest(".story_wrap");
-    section?.dispatchEvent(new Event("story:skip"));
+    section?.dispatchEvent(new CustomEvent("story:skip", {
+      detail: { direction: link.hash === "#leadership" ? 1 : -1 },
+    }));
     const nav = document.querySelector(".nav_wrap")?.getBoundingClientRect().height ?? 0;
     const position = { y: window.scrollY };
     const endSkip = () => section?.dispatchEvent(new Event("story:skip-end"));
@@ -365,6 +373,8 @@ import { timelineMilestones } from "@/data/timeline";
   @layer components {
     .story_wrap {
       --story-step: clamp(20rem, 33.333vw, 30rem);
+      --story-art-size: min(calc(var(--story-step) * 0.65), clamp(10rem, 30svh, 20rem));
+      --story-content-offset: calc(var(--story-art-size) / 2);
       background: var(--light-300);
       color: var(--dark-900);
       .story_inner {
@@ -383,7 +393,7 @@ import { timelineMilestones } from "@/data/timeline";
       .story_track { position: relative; width: max-content; list-style: none; margin: 0; padding: 0; }
       .story_item { flex: 0 0 var(--story-step); width: var(--story-step); scroll-snap-align: start; }
       .story_visual { height: clamp(10rem, 30svh, 20rem); }
-      .story_art { position: relative; width: 65%; display: grid; place-items: center; background: var(--white); }
+      .story_art { position: relative; flex-shrink: 0; width: var(--story-art-size); margin-left: calc(var(--story-content-offset) - var(--story-art-size) / 2); display: grid; place-items: center; background: var(--white); }
       .story_art img { width: 100%; height: 100%; object-fit: cover; }
       .story_wordmark { font: var(--primary-medium) clamp(1.25rem, 2.5vw, 2.25rem)/1 var(--heading-family); }
       .story_wordmark.finlender { color: var(--partner-finlender); font-family: var(--primary-family); font-weight: var(--primary-bold); font-style: italic; }
@@ -393,8 +403,10 @@ import { timelineMilestones } from "@/data/timeline";
       .story_description { display: flex; gap: var(--space-2); max-width: 22rem; margin: 0; padding-right: 2rem; font: var(--primary-regular) 1rem/1.4 var(--primary-family); }
       .story_dot { width: 0.5rem; height: 0.75rem; margin-top: 0.2rem; background: url("/purpose-icon.svg") center / contain no-repeat; }
       .story_item-year { display: block; margin-top: var(--timeline-year-gap); color: var(--brand-500); font: var(--primary-light) 2rem/1 var(--heading-family); }
+      .story_ruler, .story_description, .story_item-year { margin-left: var(--story-content-offset); }
       .story_year { display: none; margin: 0; color: var(--brand-500); font: var(--primary-light) clamp(3.5rem, 11svh, 6.75rem)/1 var(--heading-family); }
       &.is-animated {
+        --story-content-offset: 0rem;
         /* Keep following sections outside the viewport throughout the pin. */
         .story_inner { min-height: calc(100svh - var(--story-nav-height, var(--nav-height))); }
         .story_viewport { overflow: clip; scroll-snap-type: none; }
@@ -403,7 +415,7 @@ import { timelineMilestones } from "@/data/timeline";
         .story_item-year { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
         .story_description { opacity: 0.2; transition: opacity var(--hover-duration) var(--hover-ease); }
         .story_item.is-active .story_description { opacity: 1; }
-        .story_art { margin-left: -32.5%; transform: scale(0.5); transform-origin: bottom center; transition: transform var(--motion-timeline-duration) var(--motion-reveal-ease); }
+        .story_art { transform: scale(0.5); transform-origin: bottom center; transition: transform var(--motion-timeline-duration) var(--motion-reveal-ease); }
         .story_item.is-active .story_art { transform: scale(1); }
         .story_year { display: block; padding: var(--timeline-year-gap) var(--site-gutter) 0; }
       }
@@ -422,25 +434,30 @@ import { timelineMilestones } from "@/data/timeline";
         .story_title { grid-column: 1; padding-inline: var(--space-2); }
         .story_stage { margin-left: 0; }
         &.is-animated .story_track { padding-left: 1rem; }
-        &.is-animated .story_art { margin-left: 0; }
+        &.is-animated { --story-content-offset: calc(var(--story-art-size) / 2); }
       }
       @media (width < 48rem) {
         --story-step: calc(100vw - 4rem);
+        --story-art-size: 10rem;
         .story_inner { padding-block: var(--space-5); }
         .story_header { gap: var(--space-3); }
         .story_stage { margin-top: 2rem; }
         .story_visual { height: 11rem; }
-        .story_art { width: 10rem; }
         .story_ruler { height: 3.5rem; }
         .story_description { font-size: 0.875rem; padding-right: 1.5rem; }
         .story_year { font-size: 3.5rem; }
       }
-      @media (max-height: 650px) and (min-width: 768px) {
-        .story_inner { padding-block: var(--space-4); }
-        .story_stage { margin-top: 1.5rem; }
-        .story_visual { height: 10rem; }
-        .story_art { width: 10rem; }
-        .story_year { font-size: 3.5rem; }
+      @media (height <= 50rem) {
+        --story-art-size: min(calc(var(--story-step) * 0.65), clamp(7rem, 22svh, 11rem));
+        .story_inner { padding-block: clamp(0.75rem, 2svh, 1rem); }
+        .story_header { row-gap: 0.75rem; }
+        .story_controls { margin-top: 0.75rem; }
+        .story_stage { margin-top: clamp(0.75rem, 2svh, 1rem); }
+        .story_visual { height: clamp(7rem, 22svh, 11rem); }
+        .story_wordmark { font-size: clamp(1rem, 3svh, 1.5rem); }
+        .story_ruler { height: clamp(2rem, 6svh, 3rem); }
+        .story_ruler i { height: clamp(1.5rem, 4svh, 2rem); }
+        .story_year { font-size: clamp(2.5rem, 7svh, 3.5rem); }
       }
       @media (prefers-reduced-motion: reduce) { .story_viewport { scroll-snap-type: none; } }
     }
